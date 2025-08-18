@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="PayFlow Insights" />
+    <meta property="og:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta property="og:image" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta property="og:url" content="https://payflowinsights.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PayFlow Insights" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card Meta Tags (optional) -->
+    <meta name="twitter:card" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta name="twitter:title" content="PayFlow Insights" />
+    <meta name="twitter:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta name="twitter:image" content="https://payflowinsights.com/payflowlogo.png" />
+
+
+    <!-- Fallback Meta Tags -->
+    <meta name="description" content="Create custom simulated payment or account creation pages for testing." />
+
+    <title>PayFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Paste this right before your closing </head> tag -->
+<script type="text/javascript">
+    (function (f, b) { if (!b.__SV) { var e, g, i, h; window.mixpanel = b; b._i = []; b.init = function (e, f, c) { function g(a, d) { var b = d.split("."); 2 == b.length && ((a = a[b[0]]), (d = b[1])); a[d] = function () { a.push([d].concat(Array.prototype.slice.call(arguments, 0))); }; } var a = b; "undefined" !== typeof c ? (a = b[c] = []) : (c = "mixpanel"); a.people = a.people || []; a.toString = function (a) { var d = "mixpanel"; "mixpanel" !== c && (d += "." + c); a || (d += " (stub)"); return d; }; a.people.toString = function () { return a.toString(1) + ".people (stub)"; }; i = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split( " "); for (h = 0; h < i.length; h++) g(a, i[h]); var j = "set set_once union unset remove delete".split(" "); a.get_group = function () { function b(c) { d[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); a.push([e, call2]); }; } for ( var d = {}, e = ["get_group"].concat( Array.prototype.slice.call(arguments, 0)), c = 0; c < j.length; c++) b(j[c]); return d; }; b._i.push([e, f, c]); }; b.__SV = 1.2; e = f.createElement("script"); e.type = "text/javascript"; e.async = !0; e.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ? MIXPANEL_CUSTOM_LIB_URL : "file:" === f.location.protocol && "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"; g = f.getElementsByTagName("script")[0]; g.parentNode.insertBefore(e, g); } })(document, window.mixpanel || []);
+  </script>
+    <script>
+        // Initialize Mixpanel
+        mixpanel.init("bab4ae57464b185c5d9abc472f2a6983", {
+            debug: true
+        });
+
+        // Track page view event
+        document.addEventListener("DOMContentLoaded", () => {
+            mixpanel.track("Page Viewed", {
+                url: window.location.href,
+                title: document.title,
+                referrer: document.referrer
+            });
+        });
+
+        // Track clicks on buttons and links
+document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    // Check if the clicked element is a button or a link
+    if (target.tagName === "BUTTON" || target.tagName === "A") {
+        mixpanel.track("Element Clicked", {
+            tagName: target.tagName,
+            id: target.id || null,
+            classList: target.classList.value || null,
+            innerText: target.innerText || null,
+            href: target.tagName === "A" ? target.href || null : null // Only include href for links
+        });
+    }
+});
+
+    </script>
+    <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_E48xUHSTILpfeEgh4aS6h0BfamBd8Q8TqLNZWPM12Ox', {
+        api_host: 'https://us.i.posthog.com',
+        defaults: '2025-05-24',
+        person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+    })
+</script>
+    <script>
+        (function (c, s, q, u, a, r, e) {
+            c.hj=c.hj||function(){(c.hj.q=c.hj.q||[]).push(arguments)};
+            c._hjSettings = { hjid: a };
+            r = s.getElementsByTagName('head')[0];
+            e = s.createElement('script');
+            e.async = true;
+            e.src = q + c._hjSettings.hjid + u;
+            r.appendChild(e);
+        })(window, document, 'https://static.hj.contentsquare.net/c/csq-', '.js', 5242497);
+    </script>
+</head>
+<body class="bg-indigo-600 min-h-screen items-center justify-center">
+    <header class="bg-transparent py-4 text-white">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <!-- Logo -->
+            <div class=" font-bold text-xl">
+                <a href="/" class="hover:opacity-75"><strong>PayFlow</strong> <span class="font-light">Insights</span></a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex items-center space-x-6">
+                <a href="/filter" class="font-semibold hover:text-gray-300">Analytics</a>
+
+                <!-- Templates Dropdown -->
+                <div class="relative">
+                    <button id="dropdownButton" class="hover:text-gray-300 focus:outline-none">Examples</button>
+                    <div id="dropdownMenu" style="width: max-content; right: -10px;" class="absolute hidden bg-white text-black mt-2 py-2 rounded-lg shadow-lg">
+                        <a href="https://doogle.payflowinsights.com/payment/?v=Sdn8NA8q&q=https://google.com/" class="block px-4 py-2 hover:bg-gray-100">One Time Payment</a>
+                        <a href="https://doogle.payflowinsights.com/subscribe/?v=bHfIcW32&q=https://google.com" class="block px-4 py-2 hover:bg-gray-100">Subscription Checkout</a>
+                        <a href="https://doogle.payflowinsights.com/account/?v=bHfIcW32&q=https://google.com" class="block px-4 py-2 hover:bg-gray-100">Account Creation</a>
+                    </div>
+                </div>
+                 <a href="https://submitandvote.com/?j9tpk1t745ntq569" class="hover:text-gray-300 hidden lg:block">Feedback</a>
+            </nav>
+        </div>
+    </header>
+    <h2 class="px-8 text-5xl font-bold mb-6 text-gray-800 text-center mx-auto max-w-xl mt-20 text-white">See Who Tried to Buy Your Product</h2>
+    <div class="p-3">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-auto">
+            <form id="queryForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="url">Enter Your Secret Key</label>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="text" placeholder="Enter Secret Key">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button id="queryButton" class="bg-indigo-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-auto" type="button">
+                        See Analytics
+                    </button>
+                </div>
+            </form>
+            <div id="resultContainer" class="mt-6">
+                <div id="countResult" class="mb-4"></div>
+                <div id="emailList" class="mt-4"></div>
+            </div>
+        </div>
+        <div class="mx-auto w-full text-center py-5">
+            <a href="" class="mx-auto text-bold font-bold text-center text-white underline hover:text-blue-200 p-6">Lost your secret key?</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('queryButton').addEventListener('click', function() {
+            const urlInput = document.getElementById('url');
+            const url = urlInput.value.trim();
+            const resultContainer = document.getElementById('resultContainer');
+            const countResult = document.getElementById('countResult');
+            const emailList = document.getElementById('emailList');
+
+            // Clear previous results
+/*             resultContainer.innerHTML = '';
+            countResult.innerHTML = '';
+            emailList.innerHTML = ''; */
+
+            // Validate URL
+            if (!url) {
+                resultContainer.innerHTML = '<p class="text-red-500">Please enter a valid URL.</p>';
+                return;
+            }
+
+            // Show loading message
+           /*  resultContainer.innerHTML = '<p>Loading...</p>'; */
+
+            fetch(`/query-emails?secret=${encodeURIComponent(url)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    
+                    /* resultContainer.innerHTML = ''; */ // Clear loading message
+                    let people = (data.count != 1) ? 'people' : 'person';
+                    // Display count
+                    if (data.count != undefined) {
+                        countResult.innerHTML = `<p class="font-bold">${data.count} ${people} tried to buy/sign up for your product.</p>`;
+                        console.log(data.count);
+                    } else {
+                        countResult.innerHTML = '<p class="text-yellow-500">Sekret Key Invalid. Create a new flow and get one <a href="/app" class="text-indigo-600 hover:text-indigo-800 underline">here.</a></p>';
+                    }
+
+                    // Display emails
+                    if (Array.isArray(data.emails) && data.emails.length > 0) {
+                        emailList.innerHTML = '<h3 class="font-bold mb-2">Email Opt-ins:</h3>';
+                        const ul = document.createElement('ul');
+                        ul.className = 'list-disc pl-5';
+                        data.emails.forEach(email => {
+                            const li = document.createElement('li');
+                            li.textContent = email;
+                            li.className = 'mb-1';
+                            ul.appendChild(li);
+                        });
+                        emailList.appendChild(ul);
+                    } else {
+                        emailList.innerHTML = '<p>No one has given their email address yet.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error querying data:', error);
+                    resultContainer.innerHTML = `<p class="text-red-500">Error fetching data: ${error.message}. Please try again.</p>`;
+                });
+        });
+
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Optional: Close the dropdown if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

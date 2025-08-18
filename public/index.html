@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="PayFlow Insights" />
+    <meta property="og:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta property="og:image" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta property="og:url" content="https://payflowinsights.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PayFlow Insights" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card Meta Tags (optional) -->
+    <meta name="twitter:card" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta name="twitter:title" content="PayFlow Insights" />
+    <meta name="twitter:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta name="twitter:image" content="https://payflowinsights.com/payflowlogo.png" />
+
+
+    <!-- Fallback Meta Tags -->
+    <meta name="description" content="Create custom simulated payment or account creation pages for testing." />
+
+    <title>PayFlow Insights</title>
+      <!-- SEO Schema Markup -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Custom Payment Simulator Builder",
+      "description": "Create custom payment simulators to test demand for features before development. Ideal for engineers, product managers, and marketers conducting experiments.",
+      "url": "https://payflowinsights.com/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "softwareVersion": "1.0",
+      "author": {
+        "@type": "Organization",
+        "name": "PayFlow Insights"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "PayFlow Insights"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "category": "Free"
+      },
+      "potentialAction": {
+        "@type": "CreateAction",
+        "target": "https://payflowinsights.com/",
+        "result": {
+          "@type": "Thing",
+          "name": "Payment Simulator"
+        }
+      }
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Paste this right before your closing </head> tag -->
+<script type="text/javascript">
+    (function (f, b) { if (!b.__SV) { var e, g, i, h; window.mixpanel = b; b._i = []; b.init = function (e, f, c) { function g(a, d) { var b = d.split("."); 2 == b.length && ((a = a[b[0]]), (d = b[1])); a[d] = function () { a.push([d].concat(Array.prototype.slice.call(arguments, 0))); }; } var a = b; "undefined" !== typeof c ? (a = b[c] = []) : (c = "mixpanel"); a.people = a.people || []; a.toString = function (a) { var d = "mixpanel"; "mixpanel" !== c && (d += "." + c); a || (d += " (stub)"); return d; }; a.people.toString = function () { return a.toString(1) + ".people (stub)"; }; i = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split( " "); for (h = 0; h < i.length; h++) g(a, i[h]); var j = "set set_once union unset remove delete".split(" "); a.get_group = function () { function b(c) { d[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); a.push([e, call2]); }; } for ( var d = {}, e = ["get_group"].concat( Array.prototype.slice.call(arguments, 0)), c = 0; c < j.length; c++) b(j[c]); return d; }; b._i.push([e, f, c]); }; b.__SV = 1.2; e = f.createElement("script"); e.type = "text/javascript"; e.async = !0; e.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ? MIXPANEL_CUSTOM_LIB_URL : "file:" === f.location.protocol && "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"; g = f.getElementsByTagName("script")[0]; g.parentNode.insertBefore(e, g); } })(document, window.mixpanel || []);
+  </script>
+    <script>
+        // Initialize Mixpanel
+        mixpanel.init("bab4ae57464b185c5d9abc472f2a6983", {
+            debug: true
+        });
+
+        // Track page view event
+        document.addEventListener("DOMContentLoaded", () => {
+            mixpanel.track("Page Viewed", {
+                url: window.location.href,
+                title: document.title,
+                referrer: document.referrer
+            });
+        });
+
+        // Track clicks on buttons and links
+document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    // Check if the clicked element is a button or a link
+    if (target.tagName === "BUTTON" || target.tagName === "A") {
+        mixpanel.track("Element Clicked", {
+            tagName: target.tagName,
+            id: target.id || null,
+            classList: target.classList.value || null,
+            innerText: target.innerText || null,
+            href: target.tagName === "A" ? target.href || null : null // Only include href for links
+        });
+    }
+});
+
+    </script>
+   <script type="text/javascript">
+    _linkedin_partner_id = "6681218";
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+    window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+    </script><script type="text/javascript">
+    (function(l) {
+    if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+    window.lintrk.q=[]}
+    var s = document.getElementsByTagName("script")[0];
+    var b = document.createElement("script");
+    b.type = "text/javascript";b.async = true;
+    b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+    s.parentNode.insertBefore(b, s);})(window.lintrk);
+    </script>
+    <noscript>
+    <img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=6681218&fmt=gif" />
+    </noscript>
+    <script>
+        (function (c, s, q, u, a, r, e) {
+            c.hj=c.hj||function(){(c.hj.q=c.hj.q||[]).push(arguments)};
+            c._hjSettings = { hjid: a };
+            r = s.getElementsByTagName('head')[0];
+            e = s.createElement('script');
+            e.async = true;
+            e.src = q + c._hjSettings.hjid + u;
+            r.appendChild(e);
+        })(window, document, 'https://static.hj.contentsquare.net/c/csq-', '.js', 5242497);
+    </script>
+
+    <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init Ie Ts Ms Ee Es Rs capture Ge calculateEventProperties Os register register_once register_for_session unregister unregister_for_session js getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Ds Fs createPersonProfile Ls Ps opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Cs debug I As getPageViewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_E48xUHSTILpfeEgh4aS6h0BfamBd8Q8TqLNZWPM12Ox', {
+        api_host: 'https://us.i.posthog.com',
+        defaults: '2025-05-24',
+        person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+    })
+</script>
+
+    <style>
+        .token-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .copy-btn {
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 5px;;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .copy-btn img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        a {
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+        .form-step {
+            display: none;
+        }
+        .form-step.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-indigo-600 min-h-screen items-center justify-center">
+    <header class="bg-transparent py-4 text-white">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-xl">
+                <a href="/" class="hover:opacity-75"><strong>PayFlow</strong> <span class="font-light">Insights</span></a>
+            </div>
+            <nav class="flex items-center space-x-6">
+                <a href="/filter/" class="hover:text-gray-300">Analytics</a>
+                <div class="relative">
+                    <button id="dropdownButton" class="hover:text-gray-300 focus:outline-none">Examples</button>
+                    <div id="dropdownMenu" style="width: max-content; right: -10px;" class="absolute hidden bg-white text-black mt-2 py-2 rounded-lg shadow-lg">
+                        <a href="https://doogle.payflowinsights.com/payment/?v=Sdn8NA8q&q=https://google.com/" class="block px-4 py-2 hover:bg-gray-100">One Time Payment</a>
+                        <a href="https://doogle.payflowinsights.com/subscribe/?v=bHfIcW32&q=https://google.com" class="block px-4 py-2 hover:bg-gray-100">Subscription Checkout</a>
+                        <a href="https://doogle.payflowinsights.com/account/?v=bHfIcW32&q=https://google.com" class="block px-4 py-2 hover:bg-gray-100">Account Creation</a>
+                    </div>
+                </div>
+                <a href="https://submitandvote.com/?j9tpk1t745ntq569" class="hover:text-gray-300 hidden lg:block">Feedback</a>
+            </nav>
+        </div>
+    </header>
+    <h1 class="text-5xl  lg:text-7xl font-bold text-gray-700 mb-4 text-center text-white mt-20 mx-auto lg:px-8 px-5 max-w-3xl">Test What Sells Before You Build It <br><span class="text-5xl"></span></h1>
+    <h2 class="lg:text-lg font-bold mb-6 text-gray-800 text-center text-white mx-auto px-8 max-w-3xl">Create a realistic payment simulation for your project instantly. Capture intent, collect leads, and test ideas without building the full thing.</h2>
+    <div class="p-3">
+        <div id="results-container" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl mx-auto hidden">
+            <p class="text-2xl font-bold mb-4">Great Job! Here's what to do next</p>
+            <div id="secretKeyContainer" class="secret-key-container" style="display: none;">
+                <strong>1. Secret Key <span class="text-red-500">(copy now! You will need this to <a class="underline hover:text-blue-300" href="/filter/">retrieve results</a>):</span></strong><br>
+                <span id="secretKey"></span>
+                <button id="copySecretKey" class="copy-btn text-xs">Copy Key</button>
+            </div>
+        <div id="instruction" class="bold"></div>
+        <div id="subscribeLink" class="my-6"></div>
+        <p class="text-sm text-blue-800 p-2 mt-2 bg-blue-100 border-2 border-blue-800 rounded-md">For dynamic desitation links add <strong>&link=[your destinatiuon url]</strong> at the end of your url</p>
+        </div>
+        <div id="form-wrapper" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-auto min-h-60">
+            <form id="productForm">
+                <div class="form-step active">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="companyName">What's the Name of Your Company?</label>
+                    <p>Creates a unique subdomain</p>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="companyName" type="text" name="companyName" placeholder="Enter Company Name">
+                </div>
+                <div class="form-step">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="productName">What is Your Product Called?</label>
+                    <p>If you don't have a name just click next</p>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="productName" type="text" name="productName" placeholder="Enter Product Name">
+                </div>
+                <!-- Replace the company logo form step -->
+                <div class="form-step">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="companyLogoUpload">Upload Your Company Logo (700kb limit)</label>
+                    <p>Brand your payment simulator</p>
+                    <div class="mt-6 mb-3">
+                        <input type="file" 
+                            id="companyLogoUpload" 
+                            accept="image/*"
+                            class="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100">
+                        <input type="hidden" id="companyLogoLink" name="companyLogoLink">
+                        <div id="companyLogoLoading" class="hidden mt-4">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                            <p class="text-sm text-gray-500">Uploading image...</p>
+                        </div>
+                        <img id="companyLogoPreview" class="hidden mt-4 max-w-xs" alt="Company logo preview">
+                    </div>
+                </div>
+
+                <!-- Replace the product image form step -->
+                <div class="form-step">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="productImageUpload">Upload Your Product Image (700kb limit)</label>
+                    <div class="mt-6 mb-3">
+                        <input type="file" 
+                            id="productImageUpload" 
+                            accept="image/*"
+                            class="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-blue-50 file:text-blue-700
+                                    hover:file:bg-blue-100">
+                        <input type="hidden" id="productImageLink" name="productImageLink">
+                        <div id="productImageLoading" class="hidden mt-4">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                            <p class="text-sm text-gray-500">Uploading image...</p>
+                        </div>
+                        <img id="productImagePreview" class="hidden mt-4 max-w-xs" alt="Product image preview">
+                    </div>
+                </div>
+                <div class="form-step">
+                <label class="text-2xl font-bold mt-6 text-gray-800">Payment Type</label>
+                <div class="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 mt-6">
+                    <button class="payment-option border-2 border-indigo-600 text-indigo-600 px-4 py-2 rounded-full transition-colors" data-value="one-time-payment">
+                        One-time Payment
+                    </button>
+                    <button class="payment-option border-2 border-indigo-600 text-indigo-600 px-4 py-2 rounded-full transition-colors" data-value="subscription">
+                        Subscription
+                    </button>
+                    <button class="payment-option border-2 border-indigo-600 text-indigo-600 px-4 py-2 rounded-full transition-colors" data-value="account-creation">
+                        Account Creation
+                    </button>
+                </div>
+                    <input type="hidden" id="paymentType" name="paymentType">
+                </div>
+
+                <div  class="form-step">
+                    <div id="priceFields"class="">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="price">Price</label>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="price" type="number" name="price" step="0.01" placeholder="Enter Price">
+                    </div>
+                    <div id="subscriptionFields" class="">
+                        <label class="text-2xl font-bold mt-6 text-gray-800" for="monthlyPrice">Monthly Price</label>
+                        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-10" id="monthlyPrice" type="number" name="monthlyPrice" step="0.01" placeholder="Enter Monthly Price">
+                        <label class="text-2xl font-bold mt-6 text-gray-800 " for="yearlyPrice">Yearly Price</label>
+                        <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="yearlyPrice" type="number" name="yearlyPrice" step="0.01" placeholder="Enter Yearly Price">
+                    </div>
+                </div>
+                <div class="form-step">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="successMessage">Message after attempted payment</label>
+                    <p class="text-sm font-bold mt-2 text-gray-800" for="destinationURL">This is a fake experience so remember to be kind, or reward the user.</p>
+                    <textarea class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="successMessage" name="successMessage" placeholder="Hey! Thanks for participating, we will reach out shortly with a thank you gift or promo code" rows="4"></textarea>
+                </div>
+                <div class="form-step">
+                    <label class="text-2xl font-bold mt-6 text-gray-800" for="destinationURL">Destination URL</label>
+                    <p class="text-sm font-bold mt-2 text-gray-800" for="destinationURL">Direct the user after attempted payment. If your url is dynamic, skip for now.</p>
+                    <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-6 mb-3" id="destinationUrl" type="text" name="destinationUrl" placeholder="https://www.example.com/example/123">
+                </div>
+                <div class="flex items-center justify-between mt-12">
+                    <button type="button" class="text-indigo-600 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="prevBtn" style="display: none;">&larr; Previous</button>
+                    <!-- <button type="button" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="skipBtn">Skip</button> -->
+                    <button type="button" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-auto" id="nextBtn">Next &rarr;</button>
+                    <button id="submitBtn" style="display: none;" class="bg-indigo-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" disabled>Generate Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const formSteps = document.querySelectorAll('.form-step');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function showStep(index) {
+            formSteps.forEach((step, i) => {
+                step.classList.toggle('active', i === index);
+            });
+
+            prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
+            nextBtn.style.display = index < formSteps.length - 1 ? 'inline-block' : 'none';
+            submitBtn.style.display = index === formSteps.length - 1 ? 'inline-block' : 'none';
+
+            if (formSteps[index].classList.contains('active') && index === formSteps.length - 1) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep === 4 && document.getElementById('paymentType').value === 'account-creation') {
+                currentStep += 2; // Skip price fields for account creation
+            } else {
+                currentStep++;
+            }
+            showStep(currentStep);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep === 6 && document.getElementById('paymentType').value === 'account-creation') {
+                currentStep -= 2; // Go back to payment type selection for account creation
+            } else {
+                currentStep--;
+            }
+            showStep(currentStep);
+        });
+
+        document.querySelectorAll('.payment-option').forEach(button => {
+        button.addEventListener('click', function() {
+            event.preventDefault();
+            document.querySelectorAll('.payment-option').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('border-indigo-600', 'text-indigo-600');
+            });
+
+            this.classList.add('bg-indigo-600', 'text-white');
+            this.classList.remove('border-indigo-600', 'text-indigo-600');
+
+            document.getElementById('paymentType').value = this.dataset.value;
+        });
+    });
+
+        document.getElementById('productForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+        });
+
+        showStep(currentStep);
+
+        document.getElementById('productForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const uniqueToken = await fetchUniqueToken();
+
+    var formData = new FormData(event.target);
+    if (!formData.get('companyLogoLink')) {
+        formData.set('companyLogoLink', '');
+    }
+
+    formData.set('uniqueToken', uniqueToken);
+
+    // Sanitize company name for URL
+    const companyName = formData.get('companyName')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '') // Remove all characters that are not lowercase letters or numbers
+        .replace(/^[0-9]+/, ''); // Remove leading numbers if any
+
+    const paymentType = formData.get('paymentType');
+
+    const response = await fetch('/submit-product-info', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(formData.entries()))
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+    if (data.secretKey) {
+        document.getElementById('secretKey').textContent = data.secretKey;
+        document.getElementById('secretKeyContainer').style.display = 'block';
+    }
+
+    let generatedUrl = '';
+    if (paymentType === 'subscription') {
+        generatedUrl = `https://${companyName}.payflowinsights.com/subscribe/?v=${uniqueToken}`;
+    } else if (paymentType === 'one-time-payment') {
+        generatedUrl = `https://${companyName}.payflowinsights.com/payment/?v=${uniqueToken}`;
+    } else if (paymentType === 'account-creation') {
+        generatedUrl = `https://${companyName}.payflowinsights.com/account/?v=${uniqueToken}`;
+    }
+    const embedTemplates = {
+    'subscription': {
+        style: '#payflow-iframe {width: 600px; height: 875px; border: none; overflow: hidden; border-radius: 16px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}',
+        src: 'subscribe/embed.html'
+    },
+    'one-time-payment': {
+        style: '#payflow-iframe {width: 1200px; height: 475px; border: none; overflow: hidden; border-radius: 16px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);} @media (max-width: 1024px) {#payflow-iframe {width: 100%; height: 875px;}}',
+        src: 'payment/embed.html'
+    }
+};
+
+if (['subscription', 'one-time-payment'].includes(paymentType)) {
+    const { style, src } = embedTemplates[paymentType];
+    const embedCode = `<style>${style}</style><iframe id="payflow-iframe" src="https://${companyName}.payflowinsights.com/${src}?v=${uniqueToken}" scrolling="no"></iframe>`;
+    
+    const embedSection = document.createElement('div');
+    embedSection.innerHTML = `
+        <div class="mt-6">
+            <p class="mb-6">or</p>
+            <strong>3. Embed on any Page:</strong>
+            <pre><code class="bg-gray-100 block p-4 rounded-lg text-sm overflow-x-auto">${embedCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+            <button id="copyEmbedCode" class="copy-btn mt-2 text-xs">Copy Embed Code</button>
+        </div>
+    `;
+    document.getElementById('results-container').appendChild(embedSection);
+
+    document.getElementById('copyEmbedCode').addEventListener('click', () => {
+        navigator.clipboard.writeText(embedCode)
+            .then(() => alert('Embed code copied to clipboard!'))
+            .catch(err => console.error('Could not copy text: ', err));
+    });
+}
+    document.getElementById('form-wrapper').classList.add('hidden');
+    document.getElementById('results-container').classList.remove('hidden');
+    document.getElementById('subscribeLink').innerHTML = `<div class=""><strong>2. Use this url in any project</strong><br><a href="${generatedUrl}" target="_blank" class="text-indigo-600 hover:text-blue-300">${generatedUrl}</a></div>`;
+});
+
+        document.getElementById('copySecretKey').addEventListener('click', function() {
+            const secretKey = document.getElementById('secretKey').textContent;
+            navigator.clipboard.writeText(secretKey).then(function() {
+                alert('Secret key copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        });
+
+        async function fetchUniqueToken() {
+            const response = await fetch('/generate-unique-token');
+            const data = await response.json();
+            return data.uniqueToken;
+        }
+        
+        document.querySelectorAll('.payment-option').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                document.querySelectorAll('.payment-option').forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('border-indigo-600', 'text-indigo-600');
+                });
+
+                this.classList.add('bg-indigo-600', 'text-white');
+                this.classList.remove('border-indigo-600', 'text-indigo-600');
+
+                const paymentTypeInput = document.getElementById('paymentType');
+                paymentTypeInput.value = this.dataset.value;
+
+                // Trigger the change event manually
+                paymentTypeInput.dispatchEvent(new Event('change'));
+            });
+        });
+        document.getElementById('paymentType').addEventListener('change', function() {
+            var paymentType = this.value;
+            //console.log('Change event triggered'); // Debug log
+            //console.log('Selected payment type:', paymentType); // Debug log
+            if (paymentType === 'subscription') {
+                document.getElementById('subscriptionFields').classList.remove('hidden');
+                document.getElementById('priceFields').classList.add('hidden');
+            } else if (paymentType === 'one-time-payment') {
+                document.getElementById('subscriptionFields').classList.add('hidden');
+                document.getElementById('priceFields').classList.remove('hidden');
+            } else if (paymentType === 'account-creation') {
+                document.getElementById('subscriptionFields').classList.add('hidden');
+                document.getElementById('priceFields').classList.add('hidden');
+            }
+        });
+
+        
+
+            const dropdownButton = document.getElementById('dropdownButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            dropdownButton.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+
+        // Frontend JavaScript for handling image uploads
+async function uploadImageToImgur(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+        const response = await fetch('/upload-image', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error('Image upload failed');
+        }
+        
+        const data = await response.json();
+        return data.link;
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+}
+
+// Add these event listeners after your existing form setup code
+document.getElementById('companyLogoUpload').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        try {
+            const loading = document.getElementById('companyLogoLoading');
+            const preview = document.getElementById('companyLogoPreview');
+            loading.classList.remove('hidden');
+            
+            const imgurLink = await uploadImageToImgur(file);
+            document.getElementById('companyLogoLink').value = imgurLink;
+            
+            // Show preview
+            preview.src = imgurLink;
+            preview.classList.remove('hidden');
+            loading.classList.add('hidden');
+        } catch (error) {
+            alert('Failed to upload company logo. Please try again.');
+        }
+    }
+});
+
+document.getElementById('productImageUpload').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        try {
+            const loading = document.getElementById('productImageLoading');
+            const preview = document.getElementById('productImagePreview');
+            loading.classList.remove('hidden');
+            
+            const imgurLink = await uploadImageToImgur(file);
+            document.getElementById('productImageLink').value = imgurLink;
+            
+            // Show preview
+            preview.src = imgurLink;
+            preview.classList.remove('hidden');
+            loading.classList.add('hidden');
+        } catch (error) {
+            alert('Error: Please ensure the size is less than 700KB');
+        }
+    }
+});
+
+    </script>
+</body>
+</html>

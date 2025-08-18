@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="PayFlow Insights" />
+    <meta property="og:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta property="og:image" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta property="og:url" content="https://payflowinsights.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PayFlow Insights" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card Meta Tags (optional) -->
+    <meta name="twitter:card" content="https://payflowinsights.com/payflowlogo.png" />
+    <meta name="twitter:title" content="PayFlow Insights" />
+    <meta name="twitter:description" content="Create custom simulated payment or account creation pages for testing." />
+    <meta name="twitter:image" content="https://payflowinsights.com/payflowlogo.png" />
+
+
+    <!-- Fallback Meta Tags -->
+    <meta name="description" content="Create custom simulated payment or account creation pages for testing." />
+
+    <title>PayFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Paste this right before your closing </head> tag -->
+<script type="text/javascript">
+    (function (f, b) { if (!b.__SV) { var e, g, i, h; window.mixpanel = b; b._i = []; b.init = function (e, f, c) { function g(a, d) { var b = d.split("."); 2 == b.length && ((a = a[b[0]]), (d = b[1])); a[d] = function () { a.push([d].concat(Array.prototype.slice.call(arguments, 0))); }; } var a = b; "undefined" !== typeof c ? (a = b[c] = []) : (c = "mixpanel"); a.people = a.people || []; a.toString = function (a) { var d = "mixpanel"; "mixpanel" !== c && (d += "." + c); a || (d += " (stub)"); return d; }; a.people.toString = function () { return a.toString(1) + ".people (stub)"; }; i = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split( " "); for (h = 0; h < i.length; h++) g(a, i[h]); var j = "set set_once union unset remove delete".split(" "); a.get_group = function () { function b(c) { d[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); a.push([e, call2]); }; } for ( var d = {}, e = ["get_group"].concat( Array.prototype.slice.call(arguments, 0)), c = 0; c < j.length; c++) b(j[c]); return d; }; b._i.push([e, f, c]); }; b.__SV = 1.2; e = f.createElement("script"); e.type = "text/javascript"; e.async = !0; e.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ? MIXPANEL_CUSTOM_LIB_URL : "file:" === f.location.protocol && "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"; g = f.getElementsByTagName("script")[0]; g.parentNode.insertBefore(e, g); } })(document, window.mixpanel || []);
+  </script>
+    <script>
+        // Initialize Mixpanel
+        mixpanel.init("bab4ae57464b185c5d9abc472f2a6983", {
+            debug: true
+        });
+
+        // Track page view event
+        document.addEventListener("DOMContentLoaded", () => {
+            mixpanel.track("Page Viewed", {
+                url: window.location.href,
+                title: document.title,
+                referrer: document.referrer
+            });
+        });
+
+        // Track clicks on buttons and links
+document.addEventListener("click", (event) => {
+    const target = event.target;
+
+    // Check if the clicked element is a button or a link
+    if (target.tagName === "BUTTON" || target.tagName === "A") {
+        mixpanel.track("Element Clicked", {
+            tagName: target.tagName,
+            id: target.id || null,
+            classList: target.classList.value || null,
+            innerText: target.innerText || null,
+            href: target.tagName === "A" ? target.href || null : null // Only include href for links
+        });
+    }
+});
+
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Remove default focus styles from inputs */
+        input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Add focus style to the payment-wrapper and full-name-wrapper */
+        .input-wrapper-focused {
+            border-color: #2563EB; /* Tailwind's blue-600 */
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5); /* Tailwind's blue-600 */
+        }
+        input[type="number"] {
+        -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="p-2">
+        <div class="text-center hidden">
+            <div class="h-12  mx-auto mb-4 overflow-hidden hidden">
+                <img id="companyLogo" src="" class="object-cover h-full w-auto mx-auto ">
+            </div>
+            <h1 id="productName" class="hidden text-lg font-bold text-gray-700 ">Payflow Insights</h1>
+            <div class="hidden flex justify-center space-x-2 text-gray-400 text-xs">
+                <div id="companyName" class="font-semibold text-gray-700 hidden">PAYMENT INFORMATION</div>
+                <span id="subscriptionOptions"></span>
+                <span id="oneTimePaymentInfo"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:space-x-4 bg-white rounded-lg  p-8">
+            <!-- Payment Information -->
+            <div class="lg:pr-8 lg:w-2/3 mb-6 lg:mb-0">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Credit card</h2>
+                <div class="flex space-x-2 mb-6">
+                    <img src="/cards.png" alt="Accepted Cards" class="h-6">
+                </div>
+                <form id="checkoutForm" >
+                    <!-- Hidden Fields -->
+                    <input type="hidden" id="hiddenCompanyName" name="companyName">
+                    <input type="hidden" id="hiddenProductName" name="productName">
+                    <input type="hidden" id="hiddenTotalAmount" name="totalAmount">
+                    
+                    <!-- Full Name Field -->
+                    <label for="fullName" class="block text-sm font-medium text-gray-500 mb-1">Full name</label>
+                    <div id="full-name-wrapper" class="mb-4 p-2 border border-gray-300 rounded">
+                        <input type="text" id="fullName" class="w-full bg-transparent border-none p-0 focus:outline-none focus:shadow-none" placeholder="Jane Diaz" required>
+                    </div>
+                
+                    <!-- Email Field -->
+                    <label for="email" class="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                    <div id="email-wrapper" class="mb-4 p-2 border border-gray-300 rounded">
+                        <input type="email" id="email" name="email" class="w-full bg-transparent border-none p-0 focus:outline-none focus:shadow-none" placeholder="jane.diaz@example.com" required>
+                    </div>
+                
+                    <!-- Card Information Fields -->
+                    <div class="mb-6">
+                        <label for="fakeOut" class="block text-sm font-medium text-gray-500 mb-1">Card number</label>
+                        <div id="payment-wrapper" class=" relative w-full p-2 border border-gray-300 rounded pr-24">
+                            <input type="number" id="fakeOut"  class="bg-transparent border-none p-0 focus:outline-none focus:shadow-none" placeholder="4242 4242 4242 4242" required maxlength="1" autocomplete="one-time-code">
+                            <div class="absolute right-2 top-2 flex space-x-2 text-gray-400">
+                                <input type="number" id="expiry"  class="w-14 bg-transparent border-none p-0 text-right focus:outline-none focus:shadow-none" placeholder="MM/YY" required maxlength="5" autocomplete="one-time-code">
+                                <input type="number" id="cvc"  class="w-10 bg-transparent border-none p-0 text-right focus:outline-none focus:shadow-none" placeholder="CVC" required maxlength="4" autocomplete="one-time-code">
+                            </div>
+                        </div>
+                    </div>
+                
+                    <button id="paymentButton" type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-semibold">
+                        Pay Now
+                    </button>
+                </form>
+                
+            </div>
+
+         
+       <!-- Order Summary -->
+<div class="p-8 lg:w-1/3 border rounded-lg">
+    <h2 class="text-lg font-semibold text-gray-700 mb-8">Order Summary</h2>
+    
+    <div class="flex items-start mb-8">
+        <div id="orderProductImage" class="w-20 h-20 mr-4 flex-shrink-0 hidden  rounded-lg">
+            <img id="productImage" src="" alt="Product Image" class="w-full h-full object-cover rounded-lg">
+        </div>
+        <div class="flex-grow mb-6">
+            <div class="flex justify-between mb-2">
+                <span id="productItem" class="">Product</span>
+                <div>$<span id="price" class="mr-2">0</span></div>
+            </div>
+            <div class="flex justify-between">
+                <span>Quantity</span>
+                <input type="number" id="quantity" class="w-10 text-center border border-gray-300 rounded" value="1" min="1">
+            </div>
+        </div>
+    </div>
+    
+    <div class="border-t pt-4">
+        <div class="flex justify-between mb-2 text-sm">
+            <span>Subtotal</span>
+            <span id="subtotal">$0</span>
+        </div>
+        <div class="flex justify-between mb-2 text-sm">
+            <span>Service charge (3%)</span>
+            <span id="serviceCharge">$0</span>
+        </div>
+        <div class="flex justify-between font-bold text-lg mt-4">
+            <span>Total</span>
+            <span id="total">$0</span>
+        </div>
+    </div>
+</div>
+    </div>
+    <div id="propertiesContainer" class="mt-6 hidden">
+        <!-- Key-value pairs will be inserted here -->
+    </div>
+
+ <!-- Confirmation Modal -->
+ <div id="confirmationModal" class="fixed px-3 inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 id="modalHeader" class="text-xl font-semibold text-gray-700 mb-4">Thank you for your interest</h2>
+        <p id="modalBody" class="text-gray-600 mb-4">Thank you for your interest in our product! While this is not yet available we will let you know when it is ready.</p>
+        
+        <!-- Checkbox to update email in MongoDB -->
+        <div class="flex items-center my-8">
+            <input id="updateEmailCheckbox" type="checkbox" checked class="updateEmailCheckbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+           <label class="ml-2 block text-sm text-gray-700">Let me know when this is ready</label>
+       </div>
+       <div class="flex justify-between items-center">
+           <p id="termsPopup" class="text-blue-500 cursor-pointer">Terms and Conditions.</p>
+           <a href="/success/" id="modalConfirmButton" class="modalConfirmButton text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Continue →</a>
+       </div>
+    </div>
+</div>
+
+<!-- Popup modal structure -->
+<div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[51]">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 p-6 relative">
+        <span class="absolute top-4 right-4 text-xl font-bold text-gray-600 cursor-pointer" id="closeIcon">&times;</span>
+        <div id="termsText" class=" overflow-y-auto mb-4 text-gray-800"></div>
+             <!-- Checkbox to update email in MongoDB -->
+             <div class="flex items-center my-4">
+                <input id="updateEmailCheckbox" type="checkbox" checked class="updateEmailCheckbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+               <label for="updateEmailCheckbox" class="ml-2 block text-sm text-gray-700">I agree. Let me know when this is ready.</label>
+           </div>
+        <a href="/success/" id="modalConfirmButton" class=" float-right text-center modalConfirmButton bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Continue →</a>
+    </div>
+</div>
+
+<script src="../js/terms.js"></script>
+
+    <script>
+ document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const dataId = params.get('v');
+    const urlParam = params.get('q') || params.get('link'); 
+
+    if (dataId) {
+        fetch(`/fetch-event-data?dataId=${dataId}`)
+            .then(response => response.json())
+            .then(data => {
+                const propertiesContainer = document.getElementById('propertiesContainer');
+                const companyLogo = document.getElementById('companyLogo');
+                const priceElement = document.getElementById('price');
+                const oneTimePaymentInfo = document.getElementById('oneTimePaymentInfo');
+                const subscriptionOptions = document.getElementById('subscriptionOptions');
+                const paymentButton = document.getElementById('paymentButton');
+                const productName = document.getElementById('productName');
+                const companyName = document.getElementById('companyName');
+                const productItem = document.getElementById('productItem');
+                const orderProductImage = document.getElementById('orderProductImage');
+                const productImageElement = document.getElementById('productImage');
+
+                const companyNameHidden = data.companyName || 'payment';
+                const productNameHidden = data.productName || '';
+                const totalAmountHidden = document.getElementById('hiddenTotalAmount');
+                const successMessage = document.getElementById('modalBody');
+                const continueButtons = document.getElementsByClassName('modalConfirmButton');
+
+                // Populate hidden fields
+                document.getElementById('hiddenCompanyName').value = companyNameHidden;
+                document.getElementById('hiddenProductName').value = productNameHidden;
+                document.getElementById('hiddenTotalAmount').value = totalAmountHidden.value;
+
+                propertiesContainer.innerHTML = '';
+
+                if (Object.keys(data).length > 0) {
+                    for (const [key, value] of Object.entries(data)) {
+                        const propertyElement = document.createElement('div');
+                        propertyElement.classList.add('mb-2', 'p-2', 'border', 'rounded', 'bg-gray-50');
+                        propertyElement.innerHTML = `<strong>${key}:</strong> ${value}`;
+                        propertiesContainer.appendChild(propertyElement);
+
+                        if (key === 'companyLogo' && value) {
+                            companyLogo.src = value;
+                        } else if (key === 'companyName' && value) {
+                            companyName.textContent = value;
+                            document.title = value;
+                        } else if (key === 'productName' && value) {
+                            productName.textContent = value;
+                            productItem.textContent = value;
+                        } else if (key === 'price' && value) {
+                            priceElement.textContent = value;
+                            updateTotal();
+                        } else if (key.toLowerCase() === 'paymenttype') {
+                            const paymentTypeValue = value.toLowerCase().replace(/-/g, ' ');
+                            if (paymentTypeValue === 'one time payment') {
+                                oneTimePaymentInfo.style.display = 'block';
+                                subscriptionOptions.style.display = 'none';
+                                paymentButton.textContent = 'Pay Now';
+                            } else {
+                                oneTimePaymentInfo.style.display = 'none';
+                                subscriptionOptions.style.display = 'block';
+                                paymentButton.textContent = 'Subscribe';
+                            }
+                        } else if (key === 'productImage' && value) {
+                            productImageElement.src = value;
+                            orderProductImage.classList.remove('hidden');
+                        } else if (key === 'successMessage' && value) {
+                            successMessage.textContent = value;
+                        }
+                    }
+                    if (urlParam) {
+                        // If the 'q' parameter exists, set it as the href for all buttons
+                        Array.from(continueButtons).forEach(button => {
+                            button.href = urlParam;
+                        });
+                    } 
+                } else {
+                    propertiesContainer.innerHTML = '<p>No data found for the given dataId.</p>';
+                }
+            })
+            .catch(error => console.error('Error fetching event data:', error));
+    }
+
+    const quantityInput = document.getElementById('quantity');
+    const subtotalElement = document.getElementById('subtotal');
+    const serviceChargeElement = document.getElementById('serviceCharge');
+    const totalElement = document.getElementById('total');
+    const priceElement = document.getElementById('price');
+    const hiddenTotalAmount = document.getElementById('hiddenTotalAmount');
+
+    function updateTotal() {
+        const quantity = parseInt(quantityInput.value, 10);
+        const price = parseFloat(priceElement.textContent.replace('$', ''));
+        const subtotal = price * quantity;
+        const serviceCharge = subtotal * 0.03; // 3% of subtotal
+        const total = subtotal + serviceCharge;
+
+        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+        serviceChargeElement.textContent = `$${serviceCharge.toFixed(2)}`;
+        totalElement.textContent = `$${total.toFixed(2)}`;
+        hiddenTotalAmount.value = total.toFixed(2);
+    }
+
+    quantityInput.addEventListener('change', updateTotal);
+    quantityInput.addEventListener('input', updateTotal);
+    updateTotal();
+
+    const confirmationModal = document.getElementById('confirmationModal');
+    const updateEmailCheckboxes = document.getElementsByClassName('updateEmailCheckbox');
+
+    document.getElementById('fakeOut').addEventListener('input', function () {
+        confirmationModal.classList.remove('hidden');
+        document.getElementById('fakeOut').blur();
+        
+        const formData = new FormData(document.getElementById('checkoutForm'));
+        const accountData = Object.fromEntries(formData);
+        accountData.url = window.location.href;
+        delete accountData.email;
+
+        if (dataId) {
+            accountData.dataId = dataId;
+        }
+
+        console.log(accountData);
+
+        fetch('/submit-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(accountData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Account data submitted:', data);
+        })
+        .catch(error => console.error('Error submitting account data:', error));
+    }, {once : true});
+
+            const checkboxes = document.querySelectorAll('.updateEmailCheckbox');
+            const checkbox1 = checkboxes[0];
+            const checkbox2 = checkboxes[1];
+            
+
+            // Function to synchronize checkboxes
+            function syncCheckboxes(source, target) {
+                target.checked = source.checked;
+            }
+
+            // Event listeners to synchronize checkboxes
+            checkbox1.addEventListener('change', () => {
+                syncCheckboxes(checkbox1, checkbox2);
+            });
+
+            checkbox2.addEventListener('change', () => {
+                syncCheckboxes(checkbox2, checkbox1);
+            });
+
+    // Get all elements with the class 'modalConfirmButton'
+const modalConfirmButtons = document.querySelectorAll('.modalConfirmButton');
+
+function handleConfirmButtonClick(event) {
+    event.preventDefault(); // Prevent default behavior for both click and touch
+
+    const formData = new FormData(document.getElementById('checkoutForm'));
+    const accountData = Object.fromEntries(formData);
+    const updateEmailCheckbox = document.querySelector('.updateEmailCheckbox:checked');
+    
+    if (updateEmailCheckbox) {
+        fetch('/update-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: accountData.email, dataId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Email updated:', data);
+            // Hide the confirmation modal
+            document.getElementById('confirmationModal').classList.add('hidden');
+            // Navigate to the link
+            window.location.href = this.getAttribute('href');
+        })
+        .catch(error => {
+            console.error('Error updating email:', error);
+            // Navigate even if there's an error
+            window.location.href = this.getAttribute('href');
+        });
+    } else {
+        // If no email update is needed, navigate immediately
+        window.location.href = this.getAttribute('href');
+    }
+}
+
+// Add click event listener to each button
+modalConfirmButtons.forEach(button => {
+    button.addEventListener('click', handleConfirmButtonClick);
+    button.addEventListener('touchend', handleConfirmButtonClick);
+});
+
+// Add touch event listeners for mobile devices
+modalConfirmButtons.forEach(button => {
+    button.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // Prevent default touch behavior
+    });
+    button.addEventListener('touchend', function(e) {
+        e.preventDefault(); // Prevent default touch behavior
+    });
+});
+
+    const fullNameWrapper = document.getElementById('full-name-wrapper');
+    const emailWrapper = document.getElementById('email-wrapper');
+    const paymentWrapper = document.getElementById('payment-wrapper');
+    const fakeOutInput = document.getElementById('fakeOut');
+    const expiryInput = document.getElementById('expiry');
+    const cvcInput = document.getElementById('cvc');
+
+    function addFocusClass() {
+        paymentWrapper.classList.add('input-wrapper-focused');
+    }
+
+    function removeFocusClass() {
+        paymentWrapper.classList.remove('input-wrapper-focused');
+    }
+
+    [fakeOutInput, expiryInput, cvcInput].forEach(input => {
+        input.addEventListener('focus', addFocusClass);
+        input.addEventListener('blur', removeFocusClass);
+    });
+
+    const paymentButton = document.getElementById('paymentButton');
+
+    paymentButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        confirmationModal.classList.remove('hidden');
+    });
+
+    function formatExpiryDate(input) {
+        const value = input.value.replace(/\D/g, '');
+        const formattedValue = value.replace(/(\d{2})(\d{1,2})?/, '$1/$2');
+        input.value = formattedValue.trim();
+    }
+
+    expiryInput.addEventListener('input', () => formatExpiryDate(expiryInput));
+    formatExpiryDate(expiryInput);
+
+    function formatfakeOut(input) {
+        const value = input.value.replace(/\D/g, '');
+        const formattedValue = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        input.value = formattedValue.trim();
+    }
+
+    fakeOutInput.addEventListener('input', () => formatfakeOut(fakeOutInput));
+    formatfakeOut(fakeOutInput);
+
+    function checkFormValidity() {
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const fakeOut = fakeOutInput.value.replace(/\s/g, '');
+        const expiry = expiryInput.value.trim();
+        const cvc = cvcInput.value.trim();
+
+        const isValidfakeOut = fakeOut.length === 16;
+        const isValidCVC = cvc.length >= 3 && cvc.length <= 4;
+
+        const allFieldsFilled = fullName && email && isValidfakeOut && expiry && isValidCVC;
+
+        paymentButton.disabled = !allFieldsFilled;
+        paymentButton.classList.toggle('opacity-50', !allFieldsFilled);
+        paymentButton.classList.toggle('cursor-not-allowed', !allFieldsFilled);
+    }
+
+    ['fullName', 'email', 'fakeOut', 'expiry', 'cvc'].forEach(fieldId => {
+        document.getElementById(fieldId).addEventListener('input', checkFormValidity);
+    });
+
+    fakeOutInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 16) {
+            value = value.slice(0, 16);
+        }
+        this.value = value.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+        checkFormValidity();
+    });
+
+    expiryInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 4) {
+            value = value.slice(0, 4);
+        }
+        if (value.length > 2) {
+            this.value = value.slice(0, 2) + '/' + value.slice(2);
+        } else {
+            this.value = value;
+        }
+        checkFormValidity();
+    });
+
+    cvcInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 4) {
+            value = value.slice(0, 4);
+        }
+        this.value = value;
+        checkFormValidity();
+    });
+
+    checkFormValidity();
+});
+    </script>
+    
+</body>
+</html>
