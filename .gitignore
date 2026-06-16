@@ -401,3 +401,7 @@ FodyWeavers.xsd
 .codegpt
 # Claude Code
 .claude/
+
+# macOS
+.DS_Store
+**/.DS_Store
