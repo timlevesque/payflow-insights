@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -332,6 +333,96 @@ app.post('/upload-image', cors(corsOptions), upload.single('image'), async (req,
     }
 });
 
+
+// ─── V2 API Routes (visual editor flow) ───────────────────────────────────────
+
+function genId(bytes) {
+    return crypto.randomBytes(bytes).toString('hex');
+}
+
+app.post('/api/simulation', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = {
+            id: genId(4),
+            dashboardKey: genId(16),
+            creatorEmail: req.body.creatorEmail || '',
+            productName: req.body.productName || 'Untitled Product',
+            tagline: req.body.tagline || '',
+            description: req.body.description || '',
+            paymentType: req.body.paymentType || 'one-time',
+            price: parseFloat(req.body.price) || 0,
+            ctaText: req.body.ctaText || 'Pay Now',
+            primaryColor: req.body.primaryColor || '#4f46e5',
+            logoUrl: req.body.logoUrl || '',
+            productImageUrl: req.body.productImageUrl || '',
+            revealMessage: req.body.revealMessage || 'Thanks for your interest! This was a purchase simulation — no payment was taken.',
+            createdAt: new Date(),
+            visits: 0,
+        };
+        await db.collection('productinfo').insertOne(sim);
+        res.json({ simId: sim.id, dashboardKey: sim.dashboardKey });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to create simulation' });
+    }
+});
+
+app.get('/api/simulation/:id', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = await db.collection('productinfo').findOne({ id: req.params.id });
+        if (!sim) return res.status(404).json({ error: 'Not found' });
+        const { _id, dashboardKey, creatorEmail, ...pub } = sim;
+        res.json(pub);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/visit', cors(corsOptions), async (req, res) => {
+    try {
+        await db.collection('productinfo').updateOne(
+            { id: req.body.simId },
+            { $inc: { visits: 1 } }
+        );
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/lead', cors(corsOptions), async (req, res) => {
+    try {
+        const lead = {
+            simulationId: req.body.simulationId,
+            buyerName: req.body.buyerName || '',
+            buyerEmail: req.body.buyerEmail || '',
+            quantity: parseInt(req.body.quantity) || 1,
+            totalPrice: parseFloat(req.body.totalPrice) || 0,
+            consented: req.body.consented === true || req.body.consented === 'true',
+            stepReached: req.body.stepReached || 'completed',
+            deviceType: req.body.deviceType || 'unknown',
+            createdAt: new Date(),
+        };
+        await db.collection('productpurchase').insertOne(lead);
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.get('/api/dashboard/:key', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = await db.collection('productinfo').findOne({ dashboardKey: req.params.key });
+        if (!sim) return res.status(404).json({ error: 'Not found' });
+        const leads = await db.collection('productpurchase').find({ simulationId: sim.id }).sort({ createdAt: -1 }).toArray();
+        const { _id, dashboardKey, ...simData } = sim;
+        res.json({ simulation: simData, leads: leads.map(({ _id, ...l }) => l) });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
