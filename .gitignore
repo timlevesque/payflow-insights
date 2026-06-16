@@ -399,3 +399,5 @@ FodyWeavers.xsd
 #ignore .env
 .env
 .codegpt
+# Claude Code
+.claude/
