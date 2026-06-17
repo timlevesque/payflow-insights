@@ -416,11 +416,11 @@
       formCol.classList.toggle('lg:pr-8', !isAccount);
       formCol.classList.toggle('lg:border-r', !isAccount);
       formCol.classList.toggle('lg:w-full', isAccount);
-      formCol.classList.toggle('max-w-md', isAccount);
-      formCol.classList.toggle('mx-auto', isAccount);
       const card = document.getElementById('checkoutCard');
-      card.classList.toggle('max-w-lg', isAccount);
+      card.classList.toggle('max-w-sm', isAccount);
       card.classList.toggle('mx-auto', isAccount);
+      card.classList.toggle('px-10', isAccount);
+      card.classList.toggle('py-8', isAccount);
 
       if (type === 'one-time') {
         cardFields.classList.remove('hidden');
