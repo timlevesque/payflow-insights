@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayFlow — Create a simulation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+
+    :root { --primary: #4f46e5; }
+
+    /* Editable element affordances */
+    [contenteditable] {
+      outline: 2px dashed transparent;
+      border-radius: 4px;
+      cursor: text;
+      transition: outline-color 0.15s;
+      min-width: 40px;
+      display: inline-block;
+    }
+    #productNameEl, #taglineEl { display: block; }
+    [contenteditable]:hover { outline-color: var(--primary); }
+    [contenteditable]:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    #ctaTextEl:hover { outline-color: rgba(255,255,255,0.7); }
+    #ctaTextEl:focus { outline-color: white; }
+    [contenteditable]:empty::before {
+      content: attr(data-placeholder);
+      color: #9ca3af;
+      pointer-events: none;
+    }
+
+    /* Image upload areas */
+    .img-zone {
+      position: relative;
+      cursor: pointer;
+    }
+    .img-zone .img-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(79,70,229,0.75);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.15s;
+      border-radius: 8px;
+    }
+    .img-zone:hover .img-overlay { opacity: 1; }
+
+    /* Price field */
+    .price-display { cursor: pointer; }
+    .price-display:hover { text-decoration: underline; text-decoration-style: dashed; }
+
+    /* Primary color on CTA */
+    .cta-btn { background-color: var(--primary) !important; }
+
+    /* Toolbar */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Get My Link modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+      margin: 16px;
+    }
+
+    /* Simulation badge placeholder in editor */
+    .sim-badge {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    /* Subtle edit hint */
+    .edit-hint {
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto whitespace-nowrap">
+      <a href="/" class="font-bold text-gray-800 text-sm whitespace-nowrap">
+        <span class="text-indigo-600">Pay</span>Flow
+      </a>
+
+      <div class="h-4 w-px bg-gray-200"></div>
+
+      <!-- Template / Payment type -->
+      <div class="flex gap-1.5" id="typeButtons">
+        <button data-type="one-time" onclick="setType('one-time')" class="type-btn active px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">One-time</button>
+        <button data-type="subscription" onclick="setType('subscription')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Subscription</button>
+        <button data-type="physical" onclick="setType('physical')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Physical</button>
+        <button data-type="account" onclick="setType('account')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Account</button>
+      </div>
+
+      <div class="h-4 w-px bg-gray-200"></div>
+
+      <!-- Color picker -->
+      <label class="flex items-center gap-2 cursor-pointer" title="Brand color">
+        <div id="colorSwatch" class="w-5 h-5 rounded-full border border-gray-300" style="background:var(--primary)"></div>
+        <span class="text-xs text-gray-500">Color</span>
+        <input type="color" id="colorPicker" value="#4f46e5" class="sr-only" oninput="setColor(this.value)">
+      </label>
+
+      <div class="flex-1"></div>
+
+      <div class="sim-badge hidden sm:flex items-center gap-1">SIMULATION PREVIEW</div>
+
+      <button id="getLinkBtn" onclick="openGetLink()" disabled class="cta-btn text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-opacity whitespace-nowrap opacity-40 cursor-not-allowed">
+        Get My Link →
+      </button>
+    </div>
+  </div>
+
+  <!-- EDITOR CANVAS -->
+  <div class="max-w-5xl mx-auto p-4 pt-8">
+
+    <p class="edit-hint mb-6">Click anything to edit it</p>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="img-zone h-12 w-40 mx-auto mb-4" onclick="triggerUpload('logo')">
+        <img id="logoImg" src="" alt="" class="h-full w-auto mx-auto object-contain hidden rounded">
+        <div id="logoPlaceholder" class="h-full w-full border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 text-xs">+ Logo</div>
+        <div class="img-overlay rounded-lg">Upload logo</div>
+      </div>
+
+      <h1
+        id="productNameEl"
+        contenteditable="true"
+        data-placeholder="Your Product Name"
+        data-field="productName"
+        class="text-xl font-bold text-gray-800 mb-1"
+      >My Product</h1>
+
+      <p
+        id="taglineEl"
+        contenteditable="true"
+        data-placeholder="Short tagline (optional)"
+        data-field="tagline"
+        class="text-sm text-gray-500"
+      ></p>
+    </div>
+
+    <!-- Checkout card -->
+    <div class="flex flex-col lg:flex-row gap-4 bg-white rounded-xl shadow-sm p-6 lg:p-8">
+
+      <!-- Left: form fields -->
+      <div class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
+        <h2 id="formHeaderEl" class="text-base font-semibold text-gray-700 mb-2">
+          <span id="formHeaderText">Payment details</span>
+        </h2>
+        <img id="cardLogos" src="/cards.png" alt="Accepted cards" class="h-4 object-contain opacity-80 mb-5">
+
+        <div class="space-y-3 mb-6">
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Full name</label>
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">Jane Doe</div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1">Email</label>
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">jane@example.com</div>
+          </div>
+          <!-- Password fields (account only) -->
+          <div id="passwordFields" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Password <span class="text-gray-400 font-normal">(min. 12 characters)</span></label>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">••••••••••••</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Confirm password</label>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">••••••••••••</div>
+            </div>
+          </div>
+          <!-- Card fields (one-time / subscription / physical) -->
+          <div id="cardFields">
+            <label class="block text-xs font-medium text-gray-500 mb-1">Card details</label>
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 flex items-center justify-between">
+              <span class="text-sm text-gray-400">•••• •••• •••• 4242</span>
+              <div class="flex gap-2 text-xs text-gray-300">
+                <span>MM/YY</span>
+                <span>CVC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping section (physical only) -->
+        <div id="shippingFields" class="hidden mt-6">
+          <button type="button" onclick="toggleShipping()" class="w-full flex items-center justify-between mb-2">
+            <h2 class="text-base font-semibold text-gray-700">Shipping details</h2>
+            <svg id="shippingChevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="shippingBody" class="hidden space-y-2">
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">Address line 1</div>
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">Address line 2 (optional)</div>
+            <div class="flex gap-2">
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 flex-1">City</div>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 w-20">State</div>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 w-24">ZIP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm text-center cursor-text">
+          <span
+            id="ctaTextEl"
+            contenteditable="true"
+            data-placeholder="Button text"
+            data-field="ctaText"
+          >Pay Now</span>
+        </div>
+
+      </div>
+
+      <!-- Right: order summary -->
+      <div class="lg:w-2/5" id="orderSummary">
+        <h2 class="text-base font-semibold text-gray-700 mb-5">Order summary</h2>
+
+        <!-- Product image -->
+        <div class="img-zone w-full h-40 mb-4 rounded-xl overflow-hidden" onclick="triggerUpload('product')">
+          <img id="productImg" src="" alt="" class="w-full h-full object-cover hidden">
+          <div id="productImgPlaceholder" class="w-full h-full border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center text-gray-400 text-xs">+ Product image</div>
+          <div class="img-overlay rounded-xl">Upload image</div>
+        </div>
+
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600" id="summaryProductName">My Product</span>
+            <span class="font-medium text-gray-800 inline-flex items-center"><span id="currencyEl" contenteditable="true" data-field="currency" data-placeholder="$" style="min-width:1ch;padding:0;margin:0;">$</span><span id="priceEl" contenteditable="true" data-placeholder="0" inputmode="decimal" style="min-width:1ch;padding:0;margin:0;">29</span></span>
+          </div>
+          <div id="qtyRow" class="flex justify-between text-gray-400">
+            <span>Qty</span>
+            <span class="text-right">1</span>
+          </div>
+          <div id="billingRow" class="hidden text-xs text-gray-400">
+            Billed monthly
+          </div>
+          <div id="shippingRow" class="hidden flex justify-between text-gray-400">
+            <span>Shipping</span>
+            <span class="inline-flex items-center"><span id="shippingCurrencyEl">$</span><span id="shippingCostEl" contenteditable="true" data-placeholder="0.00" inputmode="decimal" style="min-width:2ch;padding:0;margin:0;">0.00</span></span>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-100 mt-4 pt-4">
+          <div class="flex justify-between font-semibold text-gray-800">
+            <span>Total</span>
+            <span id="totalEl">$29.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="edit-hint mt-4">Prices, text, and images are all editable</p>
+  </div>
+
+  <!-- Hidden file inputs -->
+  <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="handleUpload('logo', this)">
+  <input type="file" id="productUpload" accept="image/*" class="hidden" onchange="handleUpload('product', this)">
+
+  <!-- GET MY LINK MODAL -->
+  <div id="linkModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <h2 class="text-xl font-bold text-gray-800 mb-1">Get your simulation link</h2>
+      <p class="text-sm text-gray-500 mb-6">We'll generate two links — one to share, one to track results. Bookmark your dashboard link to come back to your results anytime.</p>
+
+      <label class="block text-xs font-medium text-gray-700 mb-1">Your email <span class="text-gray-400">(for your dashboard link)</span></label>
+      <input id="creatorEmail" type="email" placeholder="you@example.com" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-1">
+      <p class="text-xs text-amber-600 mb-4">📬 Check your spam folder — our email sometimes lands there.</p>
+
+      <label class="block text-xs font-medium text-gray-700 mb-1">Reveal message <span class="text-gray-400">(shown to buyers after they "pay")</span></label>
+      <textarea id="revealMsgEl" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6 resize-none">Thanks for your interest! This was a purchase simulation — no payment was taken. We'll be in touch soon.</textarea>
+
+      <button onclick="submitSimulation()" id="submitBtn" class="cta-btn w-full text-white py-3 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
+        Generate links
+      </button>
+      <button onclick="closeModal()" class="w-full text-gray-400 text-sm mt-3 hover:text-gray-600">Cancel</button>
+
+      <!-- Result state (hidden until success) -->
+      <div id="linkResult" class="hidden mt-6 space-y-4">
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p class="text-xs font-semibold text-green-700 mb-1">SHARE THIS LINK</p>
+          <div class="flex items-center gap-2">
+            <a id="simLinkEl" href="#" target="_blank" class="text-sm text-indigo-600 hover:underline truncate flex-1"></a>
+            <button onclick="copyLink('simLinkEl')" class="text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 whitespace-nowrap">Copy</button>
+          </div>
+        </div>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+          <p class="text-xs font-semibold text-indigo-700 mb-1">YOUR DASHBOARD <span class="font-normal text-indigo-400">— Bookmark this!</span></p>
+          <div class="flex items-center gap-2">
+            <a id="dashLinkEl" href="#" target="_blank" class="text-sm text-indigo-600 hover:underline truncate flex-1"></a>
+            <button onclick="copyLink('dashLinkEl')" class="text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 whitespace-nowrap">Copy</button>
+          </div>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p class="text-xs font-semibold text-gray-600 mb-1">EMBED ON YOUR SITE</p>
+          <p class="text-xs text-gray-400 mb-2">Paste this into any webpage, Webflow, Squarespace, etc.</p>
+          <div class="flex items-start gap-2">
+            <code id="embedCodeEl" class="text-xs text-gray-600 bg-white border border-gray-200 rounded p-2 flex-1 break-all font-mono"></code>
+            <button onclick="copyEmbed()" class="text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 whitespace-nowrap mt-0.5">Copy</button>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 text-center">The dashboard link is private — don't share it publicly.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function markDirty() {
+      const btn = document.getElementById('getLinkBtn');
+      btn.disabled = false;
+      btn.classList.remove('opacity-40', 'cursor-not-allowed');
+      btn.classList.add('hover:opacity-90');
+    }
+
+    const state = {
+      productName: 'My Product',
+      tagline: '',
+      paymentType: 'one-time',
+      price: 29,
+      currency: '$',
+      shippingCost: 0,
+      ctaText: 'Pay Now',
+      primaryColor: '#4f46e5',
+      logoUrl: '',
+      productImageUrl: '',
+    };
+
+    // Sync contenteditable fields to state
+    document.querySelectorAll('[contenteditable][data-field]').forEach(el => {
+      el.addEventListener('input', () => {
+        markDirty();
+        state[el.dataset.field] = el.textContent.trim();
+        if (el.dataset.field === 'productName') {
+          document.getElementById('summaryProductName').textContent = el.textContent || 'Product';
+        }
+        if (el.dataset.field === 'currency') {
+          document.getElementById('shippingCurrencyEl').textContent = el.textContent || '$';
+          updateTotal();
+        }
+      });
+    });
+
+    // Type buttons
+    function setType(type) {
+      if (state.paymentType !== type) markDirty();
+      state.paymentType = type;
+      document.querySelectorAll('.type-btn').forEach(b => {
+        const isActive = b.dataset.type === type;
+        b.classList.toggle('bg-indigo-600', isActive);
+        b.classList.toggle('text-white', isActive);
+        b.classList.toggle('border-indigo-600', isActive);
+        b.classList.toggle('text-indigo-600', !isActive);
+        b.classList.toggle('border-gray-200', !isActive);
+        b.classList.toggle('text-gray-600', !isActive);
+      });
+
+      const cardFields = document.getElementById('cardFields');
+      const passwordFields = document.getElementById('passwordFields');
+      const shippingFields = document.getElementById('shippingFields');
+      const shippingRow = document.getElementById('shippingRow');
+      const billingRow = document.getElementById('billingRow');
+      const qtyRow = document.getElementById('qtyRow');
+      const formHeaderText = document.getElementById('formHeaderText');
+      const cardLogos = document.getElementById('cardLogos');
+      const orderSummary = document.getElementById('orderSummary');
+      const ctaEl = document.getElementById('ctaTextEl');
+
+      const isAccount = type === 'account';
+      passwordFields.classList.toggle('hidden', !isAccount);
+      orderSummary.classList.toggle('hidden', isAccount);
+
+      if (type === 'one-time') {
+        cardFields.classList.remove('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
+        billingRow.classList.add('hidden');
+        qtyRow.classList.remove('hidden');
+        formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Pay Now'; state.ctaText = 'Pay Now'; }
+      } else if (type === 'subscription') {
+        cardFields.classList.remove('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
+        billingRow.classList.remove('hidden');
+        qtyRow.classList.add('hidden');
+        formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Subscribe'; state.ctaText = 'Subscribe'; }
+      } else if (type === 'physical') {
+        cardFields.classList.remove('hidden');
+        shippingFields.classList.remove('hidden');
+        shippingRow.classList.remove('hidden');
+        billingRow.classList.add('hidden');
+        qtyRow.classList.remove('hidden');
+        formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Place order'; state.ctaText = 'Place order'; }
+      } else if (isAccount) {
+        cardFields.classList.add('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
+        billingRow.classList.add('hidden');
+        qtyRow.classList.add('hidden');
+        formHeaderText.textContent = 'Create your account';
+        cardLogos.classList.add('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Create account'; state.ctaText = 'Create account'; }
+      }
+      updateTotal();
+    }
+    // Mark CTA as manually edited to stop auto-overwriting
+    document.getElementById('ctaTextEl').addEventListener('input', () => { state._ctaEdited = true; });
+    setType('one-time');
+
+    // Color picker
+    function setColor(color) {
+      markDirty();
+      state.primaryColor = color;
+      document.documentElement.style.setProperty('--primary', color);
+      document.getElementById('colorSwatch').style.background = color;
+    }
+    document.getElementById('colorPicker').addEventListener('click', e => e.stopPropagation());
+    document.getElementById('colorSwatch').parentElement.addEventListener('click', () => {
+      document.getElementById('colorPicker').click();
+    });
+
+    // Price editing — inline like other text fields
+    document.getElementById('priceEl').addEventListener('input', () => {
+      markDirty();
+      const val = parseFloat(document.getElementById('priceEl').textContent) || 0;
+      state.price = val;
+      updateTotal();
+    });
+
+    document.getElementById('shippingCostEl').addEventListener('input', () => {
+      markDirty();
+      state.shippingCost = parseFloat(document.getElementById('shippingCostEl').textContent) || 0;
+      updateTotal();
+    });
+    document.getElementById('shippingCostEl').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('shippingCostEl').blur(); }
+      if (!/[\d.]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) e.preventDefault();
+    });
+    document.getElementById('priceEl').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('priceEl').blur(); }
+      // only allow digits and a single decimal point
+      if (!/[\d.]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    function updateTotal() {
+      const total = state.price + (state.paymentType === 'physical' ? state.shippingCost : 0);
+      document.getElementById('totalEl').textContent = (state.currency || '$') + total.toFixed(2);
+    }
+
+    function toggleShipping() {
+      const body = document.getElementById('shippingBody');
+      const chevron = document.getElementById('shippingChevron');
+      const open = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', open);
+      chevron.style.transform = open ? '' : 'rotate(180deg)';
+    }
+
+    // Image uploads
+    function triggerUpload(field) {
+      document.getElementById(field === 'logo' ? 'logoUpload' : 'productUpload').click();
+    }
+    async function handleUpload(field, input) {
+      markDirty();
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 700 * 1024) { alert('Image must be under 700KB'); return; }
+      const form = new FormData();
+      form.append('image', file);
+      try {
+        const res = await fetch('/upload-image', { method: 'POST', body: form });
+        const data = await res.json();
+        if (data.link) {
+          if (field === 'logo') {
+            state.logoUrl = data.link;
+            const img = document.getElementById('logoImg');
+            img.src = data.link;
+            img.classList.remove('hidden');
+            document.getElementById('logoPlaceholder').classList.add('hidden');
+          } else {
+            state.productImageUrl = data.link;
+            const img = document.getElementById('productImg');
+            img.src = data.link;
+            img.classList.remove('hidden');
+            document.getElementById('productImgPlaceholder').classList.add('hidden');
+          }
+        }
+      } catch (e) {
+        alert('Upload failed. Please try again.');
+      }
+    }
+
+    // Get My Link modal
+    function openGetLink() {
+      document.getElementById('linkModal').classList.remove('hidden');
+      document.getElementById('creatorEmail').focus();
+    }
+    function closeModal() {
+      document.getElementById('linkModal').classList.add('hidden');
+    }
+    document.getElementById('linkModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('linkModal')) closeModal();
+    });
+
+    async function submitSimulation() {
+      const btn = document.getElementById('submitBtn');
+      const email = document.getElementById('creatorEmail').value.trim();
+      const revealMsg = document.getElementById('revealMsgEl').value.trim();
+
+      btn.textContent = 'Creating...';
+      btn.disabled = true;
+
+      const payload = {
+        ...state,
+        productName: document.getElementById('productNameEl').textContent.trim() || 'My Product',
+        tagline: document.getElementById('taglineEl').textContent.trim(),
+        ctaText: document.getElementById('ctaTextEl').textContent.trim() || 'Pay Now',
+        creatorEmail: email,
+        revealMessage: revealMsg,
+      };
+
+      try {
+        const res = await fetch('/api/simulation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!data.simId) throw new Error('No ID returned');
+
+        const origin = window.location.origin;
+        const simUrl = `${origin}/s/?v=${data.simId}`;
+        const dashUrl = `${origin}/d/?k=${data.dashboardKey}`;
+
+        document.getElementById('simLinkEl').textContent = simUrl;
+        document.getElementById('simLinkEl').href = simUrl;
+        document.getElementById('dashLinkEl').textContent = dashUrl;
+        document.getElementById('dashLinkEl').href = dashUrl;
+
+        const embedCode = `<iframe src="${simUrl}" style="width:100%;max-width:900px;height:600px;border:none;border-radius:16px" loading="lazy"></iframe>`;
+        document.getElementById('embedCodeEl').textContent = embedCode;
+        window._embedCode = embedCode;
+
+        document.getElementById('linkResult').classList.remove('hidden');
+        btn.classList.add('hidden');
+        document.querySelector('#linkModal button[onclick="closeModal()"]').textContent = 'Done';
+      } catch (e) {
+        alert('Something went wrong. Please try again.');
+        btn.textContent = 'Generate links';
+        btn.disabled = false;
+      }
+    }
+
+    function copyLink(elId) {
+      const url = document.getElementById(elId).textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    }
+
+    function copyEmbed() {
+      navigator.clipboard.writeText(window._embedCode).then(() => {
+        const btn = event.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    }
+  </script>
+</body>
+</html>

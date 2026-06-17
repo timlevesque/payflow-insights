@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    :root { --primary: #4f46e5; }
+    .cta-btn { background-color: var(--primary); }
+    .cta-btn:hover { opacity: 0.9; }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+    input:focus { outline: none; box-shadow: none; }
+    .input-focused { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79,70,229,0.2); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Simulation banner -->
+
+  <!-- Page content -->
+  <div class="max-w-5xl mx-auto p-4 pt-8" id="pageContent">
+    <!-- Loaded dynamically -->
+    <div class="text-center text-gray-400 py-20">Loading...</div>
+  </div>
+
+  <!-- Disclosure modal -->
+  <div id="disclosureModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+      <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 text-center mb-2">Thanks for your interest!</h2>
+      <p id="revealMsg" class="text-gray-500 text-sm text-center mb-6">This was a purchase simulation — no payment was taken.</p>
+
+      <div class="bg-gray-50 rounded-xl p-4 mb-6">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" id="consentCheckbox" class="mt-0.5 h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
+          <span class="text-sm text-gray-700">I'm interested — <span id="creatorContactLabel">the creator</span> can follow up with me about this product.</span>
+        </label>
+      </div>
+
+      <button onclick="confirmDisclosure()" class="cta-btn w-full text-white py-3 rounded-xl font-semibold text-sm transition-opacity">
+        Continue
+      </button>
+
+      <p class="text-xs text-gray-400 text-center mt-4">
+        Your data is collected by the simulation creator.
+        <a href="#" class="underline">Learn more</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const simId = params.get('v');
+    let simData = null;
+    let leadSubmitted = false;
+
+    async function loadSim() {
+      if (!simId) {
+        document.getElementById('pageContent').innerHTML = '<p class="text-center text-red-500 py-20">No simulation ID provided.</p>';
+        return;
+      }
+
+      // Record visit
+      fetch('/api/visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ simId }),
+      });
+
+      try {
+        const res = await fetch(`/api/simulation/${simId}`);
+        if (!res.ok) throw new Error('Not found');
+        simData = await res.json();
+        renderPage();
+      } catch (e) {
+        document.getElementById('pageContent').innerHTML = '<p class="text-center text-red-400 py-20">Simulation not found.</p>';
+      }
+    }
+
+    function renderPage() {
+      document.title = simData.productName || 'Simulation';
+      if (simData.primaryColor) {
+        document.documentElement.style.setProperty('--primary', simData.primaryColor);
+      }
+
+      const isSub = simData.paymentType === 'subscription';
+      const isAccount = simData.paymentType === 'account';
+      const isPhysical = simData.paymentType === 'physical';
+      const price = parseFloat(simData.price) || 0;
+
+      document.getElementById('pageContent').innerHTML = `
+        <!-- Header -->
+        <div class="text-center mb-8">
+          ${simData.logoUrl ? `<div class="h-12 mx-auto mb-4"><img src="${simData.logoUrl}" class="h-full w-auto mx-auto object-contain"></div>` : ''}
+          <h1 class="text-xl font-bold text-gray-800 mb-1">${esc(simData.productName)}</h1>
+          ${simData.tagline ? `<p class="text-sm text-gray-500">${esc(simData.tagline)}</p>` : ''}
+        </div>
+
+        <!-- Checkout card -->
+        <div class="flex flex-col lg:flex-row gap-4 bg-white rounded-xl shadow-sm p-6 lg:p-8">
+
+          <!-- Left: form -->
+          <div class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
+            <h2 class="text-base font-semibold text-gray-700 mb-2">${isAccount ? 'Create your account' : 'Payment details'}</h2>
+            ${!isAccount ? `<img src="/cards.png" alt="Accepted cards" class="h-4 object-contain opacity-80 mb-5">` : ''}
+
+            <form id="checkoutForm" onsubmit="handleSubmit(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Full name</label>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="nameWrap">
+                  <input type="text" id="buyerName" placeholder="Jane Doe" required
+                    class="w-full bg-transparent border-none p-0 text-sm focus:outline-none"
+                    onfocus="focusWrap('nameWrap')" onblur="blurWrap('nameWrap')">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Email</label>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="emailWrap">
+                  <input type="email" id="buyerEmail" placeholder="jane@example.com" required
+                    class="w-full bg-transparent border-none p-0 text-sm focus:outline-none"
+                    onfocus="focusWrap('emailWrap')" onblur="blurWrap('emailWrap')">
+                </div>
+              </div>
+              ${isAccount ? `
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Password <span class="text-gray-400 font-normal">(min. 12 characters)</span></label>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="pwWrap">
+                  <input type="password" id="passwordInput" placeholder="••••••••••••" minlength="12"
+                    class="w-full bg-transparent border-none p-0 text-sm focus:outline-none"
+                    onfocus="focusWrap('pwWrap')" onblur="blurWrap('pwWrap')"
+                    oninput="checkPasswordTrigger(this)" required autocomplete="new-password">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Confirm password</label>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="pwConfirmWrap">
+                  <input type="password" id="passwordConfirm" placeholder="••••••••••••"
+                    class="w-full bg-transparent border-none p-0 text-sm focus:outline-none"
+                    onfocus="focusWrap('pwConfirmWrap')" onblur="blurWrap('pwConfirmWrap')" required autocomplete="new-password">
+                </div>
+              </div>
+              ` : `
+              <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Card details</label>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 bg-white flex items-center justify-between" id="cardWrap">
+                  <input id="cardNum" type="text" placeholder="4242 4242 4242 4242" maxlength="19"
+                    class="w-full bg-transparent border-none p-0 text-sm focus:outline-none text-gray-700"
+                    oninput="fmtCard(this); checkCardTrigger(this)" onfocus="focusWrap('cardWrap')" onblur="blurWrap('cardWrap')" required autocomplete="off">
+                  <div class="flex gap-2 ml-2 flex-shrink-0">
+                    <span class="text-xs text-gray-300">MM/YY</span>
+                    <span class="text-xs text-gray-300">CVC</span>
+                  </div>
+                </div>
+              </div>
+              `}
+
+              <button type="submit" id="ctaBtn" class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm mt-2 transition-opacity opacity-50 cursor-not-allowed" disabled>
+                ${esc(simData.ctaText || 'Pay Now')}
+              </button>
+            </form>
+
+            ${isPhysical ? `
+            <div class="mt-6">
+              <button type="button" onclick="toggleShipping()" class="w-full flex items-center justify-between mb-3">
+                <h2 class="text-base font-semibold text-gray-700">Shipping details</h2>
+                <svg id="shippingChevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div id="shippingBody" class="hidden space-y-2">
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="addr1Wrap">
+                  <input type="text" placeholder="Address line 1" class="w-full bg-transparent border-none p-0 text-sm focus:outline-none" onfocus="focusWrap('addr1Wrap')" onblur="blurWrap('addr1Wrap')">
+                </div>
+                <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors" id="addr2Wrap">
+                  <input type="text" placeholder="Address line 2 (optional)" class="w-full bg-transparent border-none p-0 text-sm focus:outline-none" onfocus="focusWrap('addr2Wrap')" onblur="blurWrap('addr2Wrap')">
+                </div>
+                <div class="flex gap-2">
+                  <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors flex-1" id="cityWrap">
+                    <input type="text" placeholder="City" class="w-full bg-transparent border-none p-0 text-sm focus:outline-none" onfocus="focusWrap('cityWrap')" onblur="blurWrap('cityWrap')">
+                  </div>
+                  <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors w-20" id="stateWrap">
+                    <input type="text" placeholder="State" class="w-full bg-transparent border-none p-0 text-sm focus:outline-none" onfocus="focusWrap('stateWrap')" onblur="blurWrap('stateWrap')">
+                  </div>
+                  <div class="border border-gray-200 rounded-lg px-3 py-2.5 transition-colors w-24" id="zipWrap">
+                    <input type="text" placeholder="ZIP" class="w-full bg-transparent border-none p-0 text-sm focus:outline-none" onfocus="focusWrap('zipWrap')" onblur="blurWrap('zipWrap')">
+                  </div>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+
+          </div>
+
+          <!-- Right: order summary -->
+          <div class="lg:w-2/5${isAccount ? ' hidden' : ''}">
+            <h2 class="text-base font-semibold text-gray-700 mb-5">Order summary</h2>
+
+            ${simData.productImageUrl ? `
+            <div class="w-full h-40 mb-4 rounded-xl overflow-hidden">
+              <img src="${simData.productImageUrl}" class="w-full h-full object-cover">
+            </div>` : ''}
+
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">${esc(simData.productName)}</span>
+                <span class="font-medium text-gray-800">$${price % 1 === 0 ? price : price.toFixed(2)}${isSub ? '/mo' : ''}</span>
+              </div>
+              ${!isSub ? `
+              <div class="flex justify-between text-gray-400 items-center">
+                <span>Qty</span>
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQty(-1)" class="w-6 h-6 border border-gray-200 rounded text-gray-500 hover:bg-gray-50 text-sm leading-none">−</button>
+                  <span id="qtyDisplay">1</span>
+                  <button onclick="changeQty(1)" class="w-6 h-6 border border-gray-200 rounded text-gray-500 hover:bg-gray-50 text-sm leading-none">+</button>
+                </div>
+              </div>` : `<div class="text-xs text-gray-400">Billed monthly</div>`}
+              ${isPhysical && simData.shippingCost > 0 ? `
+              <div class="flex justify-between text-gray-400">
+                <span>Shipping</span>
+                <span>${simData.currency || '$'}${parseFloat(simData.shippingCost).toFixed(2)}</span>
+              </div>` : ''}
+            </div>
+
+            <div class="border-t border-gray-100 mt-4 pt-4">
+              <div class="flex justify-between font-semibold text-gray-800">
+                <span>Total</span>
+                <span id="totalDisplay">$${(price + (isPhysical ? (parseFloat(simData.shippingCost) || 0) : 0)).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setupFormValidation();
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function focusWrap(id) { document.getElementById(id)?.classList.add('input-focused'); }
+    function blurWrap(id) { document.getElementById(id)?.classList.remove('input-focused'); }
+
+    function fmtCard(input) {
+      let v = input.value.replace(/\D/g,'').slice(0,16);
+      input.value = v.replace(/(\d{4})(?=\d)/g,'$1 ');
+    }
+
+    function checkCardTrigger(input) {
+      const digits = input.value.replace(/\D/g,'');
+      if (digits.length >= 3) {
+        input.blur();
+        document.getElementById('revealMsg').textContent = simData.revealMessage || 'This was a purchase simulation — no payment was taken.';
+        document.getElementById('disclosureModal').classList.remove('hidden');
+        // store pending lead from current form values
+        const price = parseFloat(simData.price) || 0;
+        const total = simData.paymentType === 'subscription' ? price : price * qty;
+        pendingLead = {
+          simulationId: simId,
+          buyerName: document.getElementById('buyerName')?.value || '',
+          buyerEmail: document.getElementById('buyerEmail')?.value || '',
+          quantity: qty,
+          totalPrice: total,
+          stepReached: 'completed',
+          deviceType: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        };
+      }
+    }
+    function checkPasswordTrigger(input) {
+      if (input.value.length >= 3) {
+        input.blur();
+        document.getElementById('revealMsg').textContent = simData.revealMessage || 'This was an account creation simulation — no account was created.';
+        document.getElementById('disclosureModal').classList.remove('hidden');
+        const price = parseFloat(simData.price) || 0;
+        pendingLead = {
+          simulationId: simId,
+          buyerName: document.getElementById('buyerName')?.value || '',
+          buyerEmail: document.getElementById('buyerEmail')?.value || '',
+          quantity: 1,
+          totalPrice: 0,
+          stepReached: 'completed',
+          deviceType: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        };
+      }
+    }
+
+    function toggleShipping() {
+      const body = document.getElementById('shippingBody');
+      const chevron = document.getElementById('shippingChevron');
+      if (!body) return;
+      const open = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', open);
+      chevron.style.transform = open ? '' : 'rotate(180deg)';
+    }
+
+    function fmtExp(input) {
+      let v = input.value.replace(/\D/g,'').slice(0,4);
+      if (v.length > 2) v = v.slice(0,2)+'/'+v.slice(2);
+      input.value = v;
+    }
+
+    let qty = 1;
+    function changeQty(delta) {
+      qty = Math.max(1, qty + delta);
+      document.getElementById('qtyDisplay').textContent = qty;
+      const price = parseFloat(simData.price) || 0;
+      document.getElementById('totalDisplay').textContent = '$' + (price * qty).toFixed(2);
+    }
+
+    function setupFormValidation() {
+      const form = document.getElementById('checkoutForm');
+      const btn = document.getElementById('ctaBtn');
+      if (!form || !btn) return;
+      form.addEventListener('input', () => {
+        const valid = form.checkValidity();
+        btn.disabled = !valid;
+        btn.classList.toggle('opacity-50', !valid);
+        btn.classList.toggle('cursor-not-allowed', !valid);
+      });
+    }
+
+    let pendingLead = null;
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      if (leadSubmitted) return;
+
+      const price = parseFloat(simData.price) || 0;
+      const total = simData.paymentType === 'subscription' ? price : price * qty;
+
+      // Store lead data — submit after disclosure so we capture actual consent
+      pendingLead = {
+        simulationId: simId,
+        buyerName: document.getElementById('buyerName').value,
+        buyerEmail: document.getElementById('buyerEmail').value,
+        quantity: qty,
+        totalPrice: total,
+        stepReached: 'completed',
+        deviceType: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      };
+
+      document.getElementById('revealMsg').textContent = simData.revealMessage || 'This was a purchase simulation — no payment was taken.';
+      document.getElementById('disclosureModal').classList.remove('hidden');
+    }
+
+    async function confirmDisclosure() {
+      const consented = document.getElementById('consentCheckbox').checked;
+
+      if (pendingLead && !leadSubmitted) {
+        leadSubmitted = true;
+        await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...pendingLead,
+            buyerEmail: consented ? pendingLead.buyerEmail : '',
+            consented,
+          }),
+        }).catch(console.error);
+      }
+
+      document.getElementById('disclosureModal').classList.add('hidden');
+      document.getElementById('pageContent').innerHTML = `
+        <div class="max-w-md mx-auto text-center py-20">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-3">You're on the list</h2>
+          <p class="text-gray-500 text-sm">${esc(simData.revealMessage)}</p>
+        </div>
+      `;
+    }
+
+    loadSim();
+  </script>
+</body>
+</html>

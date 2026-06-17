@@ -399,3 +399,9 @@ FodyWeavers.xsd
 #ignore .env
 .env
 .codegpt
+# Claude Code
+.claude/
+
+# macOS
+.DS_Store
+**/.DS_Store

@@ -1,4 +1,6 @@
 import express from 'express';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -13,6 +15,42 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 
 dotenv.config();
+
+const mailer = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+});
+
+async function sendDashboardEmail(toEmail, simName, simUrl, dashUrl) {
+    if (!toEmail) return;
+    await mailer.sendMail({
+        from: `"PayFlow Insights" <${process.env.GMAIL_USER}>`,
+        to: toEmail,
+        subject: `Your PayFlow simulation is live — ${simName}`,
+        html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1f2937">
+                <h2 style="margin:0 0 8px">Your simulation is live 🎉</h2>
+                <p style="color:#6b7280;margin:0 0 32px">Here are your two links. Bookmark the dashboard — it's the only way to get back to your results.</p>
+
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin-bottom:16px">
+                    <p style="font-size:11px;font-weight:700;color:#15803d;letter-spacing:.05em;margin:0 0 8px">SHARE THIS LINK</p>
+                    <a href="${simUrl}" style="color:#4f46e5;font-size:14px;word-break:break-all">${simUrl}</a>
+                </div>
+
+                <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:20px;margin-bottom:32px">
+                    <p style="font-size:11px;font-weight:700;color:#4338ca;letter-spacing:.05em;margin:0 0 4px">YOUR DASHBOARD — Bookmark this!</p>
+                    <p style="font-size:11px;color:#6366f1;margin:0 0 8px">Private — don't share publicly</p>
+                    <a href="${dashUrl}" style="color:#4f46e5;font-size:14px;word-break:break-all">${dashUrl}</a>
+                </div>
+
+                <p style="font-size:12px;color:#9ca3af;margin:0">Sent by PayFlow Insights · <a href="${simUrl}" style="color:#9ca3af">View simulation</a></p>
+            </div>
+        `,
+    });
+}
 
 const mixpanelClient = mixpanel.init(process.env.MIXPANEL_TOKEN);
 const MIXPANEL_PROJECT_ID = process.env.MIXPANEL_PROJECT_ID;
@@ -332,6 +370,105 @@ app.post('/upload-image', cors(corsOptions), upload.single('image'), async (req,
     }
 });
 
+
+// ─── V2 API Routes (visual editor flow) ───────────────────────────────────────
+
+function genId(bytes) {
+    return crypto.randomBytes(bytes).toString('hex');
+}
+
+app.post('/api/simulation', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = {
+            id: genId(4),
+            dashboardKey: genId(16),
+            creatorEmail: req.body.creatorEmail || '',
+            productName: req.body.productName || 'Untitled Product',
+            tagline: req.body.tagline || '',
+            description: req.body.description || '',
+            paymentType: req.body.paymentType || 'one-time',
+            price: parseFloat(req.body.price) || 0,
+            ctaText: req.body.ctaText || 'Pay Now',
+            primaryColor: req.body.primaryColor || '#4f46e5',
+            logoUrl: req.body.logoUrl || '',
+            productImageUrl: req.body.productImageUrl || '',
+            revealMessage: req.body.revealMessage || 'Thanks for your interest! This was a purchase simulation — no payment was taken.',
+            createdAt: new Date(),
+            visits: 0,
+        };
+        await db.collection('productinfo').insertOne(sim);
+
+        const origin = req.headers.origin || `http://localhost:${process.env.PORT || 3000}`;
+        const simUrl = `${origin}/s/?v=${sim.id}`;
+        const dashUrl = `${origin}/d/?k=${sim.dashboardKey}`;
+        console.log(`Sending email to: ${sim.creatorEmail}`);
+        sendDashboardEmail(sim.creatorEmail, sim.productName, simUrl, dashUrl)
+            .then(() => console.log('Email sent successfully'))
+            .catch(e => console.error('Email error:', e.message));
+
+        res.json({ simId: sim.id, dashboardKey: sim.dashboardKey });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to create simulation' });
+    }
+});
+
+app.get('/api/simulation/:id', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = await db.collection('productinfo').findOne({ id: req.params.id });
+        if (!sim) return res.status(404).json({ error: 'Not found' });
+        const { _id, dashboardKey, creatorEmail, ...pub } = sim;
+        res.json(pub);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/visit', cors(corsOptions), async (req, res) => {
+    try {
+        await db.collection('productinfo').updateOne(
+            { id: req.body.simId },
+            { $inc: { visits: 1 } }
+        );
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/api/lead', cors(corsOptions), async (req, res) => {
+    try {
+        const lead = {
+            simulationId: req.body.simulationId,
+            buyerName: req.body.buyerName || '',
+            buyerEmail: req.body.buyerEmail || '',
+            quantity: parseInt(req.body.quantity) || 1,
+            totalPrice: parseFloat(req.body.totalPrice) || 0,
+            consented: req.body.consented === true || req.body.consented === 'true',
+            stepReached: req.body.stepReached || 'completed',
+            deviceType: req.body.deviceType || 'unknown',
+            createdAt: new Date(),
+        };
+        await db.collection('productpurchase').insertOne(lead);
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.get('/api/dashboard/:key', cors(corsOptions), async (req, res) => {
+    try {
+        const sim = await db.collection('productinfo').findOne({ dashboardKey: req.params.key });
+        if (!sim) return res.status(404).json({ error: 'Not found' });
+        const leads = await db.collection('productpurchase').find({ simulationId: sim.id }).sort({ createdAt: -1 }).toArray();
+        const { _id, dashboardKey, ...simData } = sim;
+        res.json({ simulation: simData, leads: leads.map(({ _id, ...l }) => l) });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
