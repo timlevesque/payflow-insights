@@ -390,7 +390,7 @@ app.post('/api/simulation', cors(corsOptions), async (req, res) => {
         };
         await db.collection('productinfo').insertOne(sim);
 
-        const origin = req.headers.origin || `http://localhost:${process.env.PORT || 3000}`;
+        const origin = process.env.SITE_URL || req.headers.origin || `http://localhost:${process.env.PORT || 3000}`;
         const simUrl = `${origin}/s/?v=${sim.id}`;
         const dashUrl = `${origin}/d/?k=${sim.dashboardKey}`;
         console.log(`Sending email to: ${sim.creatorEmail}`);
