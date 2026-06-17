@@ -394,9 +394,12 @@ app.post('/api/simulation', cors(corsOptions), async (req, res) => {
         const simUrl = `${origin}/s/?v=${sim.id}`;
         const dashUrl = `${origin}/d/?k=${sim.dashboardKey}`;
         console.log(`Sending email to: ${sim.creatorEmail}`);
-        sendDashboardEmail(sim.creatorEmail, sim.productName, simUrl, dashUrl)
-            .then(() => console.log('Email sent successfully'))
-            .catch(e => console.error('Email error:', e.message));
+        try {
+            await sendDashboardEmail(sim.creatorEmail, sim.productName, simUrl, dashUrl);
+            console.log('Email sent successfully');
+        } catch (e) {
+            console.error('Email error:', e.message);
+        }
 
         res.json({ simId: sim.id, dashboardKey: sim.dashboardKey });
     } catch (err) {
