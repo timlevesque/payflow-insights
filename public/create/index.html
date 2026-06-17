@@ -188,7 +188,7 @@
     <div class="flex flex-col lg:flex-row gap-4 bg-white rounded-xl shadow-sm p-6 lg:p-8">
 
       <!-- Left: form fields -->
-      <div class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
+      <div id="formCol" class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
         <h2 id="formHeaderEl" class="text-base font-semibold text-gray-700 mb-2">
           <span id="formHeaderText">Payment details</span>
         </h2>
@@ -386,7 +386,6 @@
 
     // Type buttons
     function setType(type) {
-      if (state.paymentType !== type) markDirty();
       state.paymentType = type;
       document.querySelectorAll('.type-btn').forEach(b => {
         const isActive = b.dataset.type === type;
@@ -412,6 +411,11 @@
       const isAccount = type === 'account';
       passwordFields.classList.toggle('hidden', !isAccount);
       orderSummary.classList.toggle('hidden', isAccount);
+      const formCol = document.getElementById('formCol');
+      formCol.classList.toggle('lg:w-3/5', !isAccount);
+      formCol.classList.toggle('lg:pr-8', !isAccount);
+      formCol.classList.toggle('lg:border-r', !isAccount);
+      formCol.classList.toggle('lg:w-full', isAccount);
 
       if (type === 'one-time') {
         cardFields.classList.remove('hidden');
