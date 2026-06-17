@@ -52,6 +52,14 @@ async function sendDashboardEmail(toEmail, simName, simUrl, dashUrl) {
 // MongoDB Connection URL
 const MONGO_URI = process.env.MONGO_URI;
 let db;
+let mongoClient;
+
+async function getDb() {
+    if (db) return db;
+    mongoClient = await MongoClient.connect(MONGO_URI);
+    db = mongoClient.db('payflow-insights');
+    return db;
+}
 
 const app = express();
 
@@ -89,13 +97,17 @@ const corsOptions = {
     credentials: true  // If credentials (cookies, etc.) are allowed
 };
 
-// Connect to MongoDB
-MongoClient.connect(MONGO_URI)
-    .then(client => {
-        console.log('Connected to MongoDB');
-        db = client.db('payflow-insights'); // Replace with your database name
-    })
-    .catch(error => console.error('Error connecting to MongoDB:', error));
+
+// Ensure DB is connected before any request
+app.use(async (req, res, next) => {
+    try {
+        db = await getDb();
+        next();
+    } catch (e) {
+        console.error('DB connection failed:', e.message);
+        res.status(500).json({ error: 'Database unavailable' });
+    }
+});
 
 // Middleware to remove .html extension from URLs
 app.use((req, res, next) => {
