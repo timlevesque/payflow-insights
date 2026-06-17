@@ -4,12 +4,9 @@ import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import mixpanel from 'mixpanel';
-import { URLSearchParams } from 'url';
 import { MongoClient } from 'mongodb';
 import cors from 'cors';
 import multer from 'multer';
-import { FormData, Blob } from 'formdata-node';
 import fetch from 'node-fetch';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
@@ -51,11 +48,6 @@ async function sendDashboardEmail(toEmail, simName, simUrl, dashUrl) {
         `,
     });
 }
-
-const mixpanelClient = mixpanel.init(process.env.MIXPANEL_TOKEN);
-const MIXPANEL_PROJECT_ID = process.env.MIXPANEL_PROJECT_ID;
-const MIXPANEL_SERVICE_ACCOUNT_USERNAME = process.env.MIXPANEL_SERVICE_ACCOUNT_USERNAME;
-const MIXPANEL_SERVICE_ACCOUNT_SECRET = process.env.MIXPANEL_SERVICE_ACCOUNT_SECRET;
 
 // MongoDB Connection URL
 const MONGO_URI = process.env.MONGO_URI;
