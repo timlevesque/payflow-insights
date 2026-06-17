@@ -1,5 +1,6 @@
 import express from 'express';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -14,6 +15,42 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 
 dotenv.config();
+
+const mailer = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+});
+
+async function sendDashboardEmail(toEmail, simName, simUrl, dashUrl) {
+    if (!toEmail) return;
+    await mailer.sendMail({
+        from: `"PayFlow Insights" <${process.env.GMAIL_USER}>`,
+        to: toEmail,
+        subject: `Your PayFlow simulation is live — ${simName}`,
+        html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1f2937">
+                <h2 style="margin:0 0 8px">Your simulation is live 🎉</h2>
+                <p style="color:#6b7280;margin:0 0 32px">Here are your two links. Bookmark the dashboard — it's the only way to get back to your results.</p>
+
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin-bottom:16px">
+                    <p style="font-size:11px;font-weight:700;color:#15803d;letter-spacing:.05em;margin:0 0 8px">SHARE THIS LINK</p>
+                    <a href="${simUrl}" style="color:#4f46e5;font-size:14px;word-break:break-all">${simUrl}</a>
+                </div>
+
+                <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:20px;margin-bottom:32px">
+                    <p style="font-size:11px;font-weight:700;color:#4338ca;letter-spacing:.05em;margin:0 0 4px">YOUR DASHBOARD — Bookmark this!</p>
+                    <p style="font-size:11px;color:#6366f1;margin:0 0 8px">Private — don't share publicly</p>
+                    <a href="${dashUrl}" style="color:#4f46e5;font-size:14px;word-break:break-all">${dashUrl}</a>
+                </div>
+
+                <p style="font-size:12px;color:#9ca3af;margin:0">Sent by PayFlow Insights · <a href="${simUrl}" style="color:#9ca3af">View simulation</a></p>
+            </div>
+        `,
+    });
+}
 
 const mixpanelClient = mixpanel.init(process.env.MIXPANEL_TOKEN);
 const MIXPANEL_PROJECT_ID = process.env.MIXPANEL_PROJECT_ID;
@@ -360,6 +397,15 @@ app.post('/api/simulation', cors(corsOptions), async (req, res) => {
             visits: 0,
         };
         await db.collection('productinfo').insertOne(sim);
+
+        const origin = req.headers.origin || `http://localhost:${process.env.PORT || 3000}`;
+        const simUrl = `${origin}/s/?v=${sim.id}`;
+        const dashUrl = `${origin}/d/?k=${sim.dashboardKey}`;
+        console.log(`Sending email to: ${sim.creatorEmail}`);
+        sendDashboardEmail(sim.creatorEmail, sim.productName, simUrl, dashUrl)
+            .then(() => console.log('Email sent successfully'))
+            .catch(e => console.error('Email error:', e.message));
+
         res.json({ simId: sim.id, dashboardKey: sim.dashboardKey });
     } catch (err) {
         console.error(err);

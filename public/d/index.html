@@ -116,7 +116,7 @@
                   ${leads.filter(l => l.stepReached === 'completed').map(l => `
                     <tr class="hover:bg-gray-50">
                       <td class="py-3 text-gray-800 font-medium">${esc(l.buyerName)}</td>
-                      <td class="py-3 text-gray-600">${esc(l.buyerEmail)}</td>
+                      <td class="py-3 text-gray-600">${l.buyerEmail ? esc(l.buyerEmail) : '<span class="text-gray-300 italic">anonymous</span>'}</td>
                       <td class="py-3 text-gray-500">${l.quantity}</td>
                       <td class="py-3 text-gray-800 font-medium">$${parseFloat(l.totalPrice).toFixed(2)}</td>
                       <td class="py-3">${l.consented ? '<span class="text-green-600 font-medium">Yes</span>' : '<span class="text-gray-300">No</span>'}</td>
@@ -184,7 +184,7 @@
       const rows = [['Name','Email','Quantity','Total Price','Opted In','Device','Date']];
       window._leads.forEach(l => {
         rows.push([
-          l.buyerName, l.buyerEmail, l.quantity,
+          l.buyerName, l.buyerEmail || 'anonymous', l.quantity,
           parseFloat(l.totalPrice).toFixed(2),
           l.consented ? 'Yes' : 'No',
           l.deviceType || '',

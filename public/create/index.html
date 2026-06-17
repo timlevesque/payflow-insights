@@ -20,11 +20,14 @@
       min-width: 40px;
       display: inline-block;
     }
+    #productNameEl, #taglineEl { display: block; }
     [contenteditable]:hover { outline-color: var(--primary); }
     [contenteditable]:focus {
       outline: 2px solid var(--primary);
       outline-offset: 2px;
     }
+    #ctaTextEl:hover { outline-color: rgba(255,255,255,0.7); }
+    #ctaTextEl:focus { outline-color: white; }
     [contenteditable]:empty::before {
       content: attr(data-placeholder);
       color: #9ca3af;
@@ -127,7 +130,8 @@
       <div class="flex gap-1.5" id="typeButtons">
         <button data-type="one-time" onclick="setType('one-time')" class="type-btn active px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">One-time</button>
         <button data-type="subscription" onclick="setType('subscription')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Subscription</button>
-        <button data-type="service" onclick="setType('service')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Service</button>
+        <button data-type="physical" onclick="setType('physical')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Physical</button>
+        <button data-type="account" onclick="setType('account')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Account</button>
       </div>
 
       <div class="h-4 w-px bg-gray-200"></div>
@@ -143,7 +147,7 @@
 
       <div class="sim-badge hidden sm:flex items-center gap-1">SIMULATION PREVIEW</div>
 
-      <button onclick="openGetLink()" class="cta-btn text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity whitespace-nowrap">
+      <button id="getLinkBtn" onclick="openGetLink()" disabled class="cta-btn text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-opacity whitespace-nowrap opacity-40 cursor-not-allowed">
         Get My Link →
       </button>
     </div>
@@ -184,9 +188,10 @@
 
       <!-- Left: form fields -->
       <div class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
-        <h2 id="formHeaderEl" class="text-base font-semibold text-gray-700 mb-5">
+        <h2 id="formHeaderEl" class="text-base font-semibold text-gray-700 mb-2">
           <span id="formHeaderText">Payment details</span>
         </h2>
+        <img id="cardLogos" src="/cards.png" alt="Accepted cards" class="h-4 object-contain opacity-80 mb-5">
 
         <div class="space-y-3 mb-6">
           <div>
@@ -197,7 +202,18 @@
             <label class="block text-xs font-medium text-gray-500 mb-1">Email</label>
             <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">jane@example.com</div>
           </div>
-          <!-- Card fields (one-time / subscription) -->
+          <!-- Password fields (account only) -->
+          <div id="passwordFields" class="hidden space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Password <span class="text-gray-400 font-normal">(min. 12 characters)</span></label>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">••••••••••••</div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Confirm password</label>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">••••••••••••</div>
+            </div>
+          </div>
+          <!-- Card fields (one-time / subscription / physical) -->
           <div id="cardFields">
             <label class="block text-xs font-medium text-gray-500 mb-1">Card details</label>
             <div class="border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 flex items-center justify-between">
@@ -210,23 +226,36 @@
           </div>
         </div>
 
-        <button class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
+        <!-- Shipping section (physical only) -->
+        <div id="shippingFields" class="hidden mt-6">
+          <button type="button" onclick="toggleShipping()" class="w-full flex items-center justify-between mb-2">
+            <h2 class="text-base font-semibold text-gray-700">Shipping details</h2>
+            <svg id="shippingChevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="shippingBody" class="hidden space-y-2">
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">Address line 1</div>
+            <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50">Address line 2 (optional)</div>
+            <div class="flex gap-2">
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 flex-1">City</div>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 w-20">State</div>
+              <div class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-400 bg-gray-50 w-24">ZIP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm text-center cursor-text">
           <span
             id="ctaTextEl"
             contenteditable="true"
             data-placeholder="Button text"
             data-field="ctaText"
-            class="pointer-events-none"
           >Pay Now</span>
-        </button>
+        </div>
 
-        <p class="text-xs text-gray-400 text-center mt-3">
-          Powered by <span class="font-medium text-indigo-400">PayFlow</span> · Simulation only
-        </p>
       </div>
 
       <!-- Right: order summary -->
-      <div class="lg:w-2/5">
+      <div class="lg:w-2/5" id="orderSummary">
         <h2 class="text-base font-semibold text-gray-700 mb-5">Order summary</h2>
 
         <!-- Product image -->
@@ -239,21 +268,18 @@
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
             <span class="text-gray-600" id="summaryProductName">My Product</span>
-            <span class="font-medium text-gray-800">
-              $<span
-                id="priceEl"
-                class="price-display"
-                onclick="editPrice()"
-                title="Click to edit price"
-              >29</span>
-            </span>
+            <span class="font-medium text-gray-800 inline-flex items-center"><span id="currencyEl" contenteditable="true" data-field="currency" data-placeholder="$" style="min-width:1ch;padding:0;margin:0;">$</span><span id="priceEl" contenteditable="true" data-placeholder="0" inputmode="decimal" style="min-width:1ch;padding:0;margin:0;">29</span></span>
           </div>
           <div id="qtyRow" class="flex justify-between text-gray-400">
             <span>Qty</span>
-            <span>1</span>
+            <span class="text-right">1</span>
           </div>
           <div id="billingRow" class="hidden text-xs text-gray-400">
             Billed monthly
+          </div>
+          <div id="shippingRow" class="hidden flex justify-between text-gray-400">
+            <span>Shipping</span>
+            <span class="inline-flex items-center"><span id="shippingCurrencyEl">$</span><span id="shippingCostEl" contenteditable="true" data-placeholder="0.00" inputmode="decimal" style="min-width:2ch;padding:0;margin:0;">0.00</span></span>
           </div>
         </div>
 
@@ -280,7 +306,8 @@
       <p class="text-sm text-gray-500 mb-6">We'll generate two links — one to share, one to track results. Bookmark your dashboard link to come back to your results anytime.</p>
 
       <label class="block text-xs font-medium text-gray-700 mb-1">Your email <span class="text-gray-400">(for your dashboard link)</span></label>
-      <input id="creatorEmail" type="email" placeholder="you@example.com" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4">
+      <input id="creatorEmail" type="email" placeholder="you@example.com" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-1">
+      <p class="text-xs text-amber-600 mb-4">📬 Check your spam folder — our email sometimes lands there.</p>
 
       <label class="block text-xs font-medium text-gray-700 mb-1">Reveal message <span class="text-gray-400">(shown to buyers after they "pay")</span></label>
       <textarea id="revealMsgEl" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6 resize-none">Thanks for your interest! This was a purchase simulation — no payment was taken. We'll be in touch soon.</textarea>
@@ -306,24 +333,35 @@
             <button onclick="copyLink('dashLinkEl')" class="text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 whitespace-nowrap">Copy</button>
           </div>
         </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p class="text-xs font-semibold text-gray-600 mb-1">EMBED ON YOUR SITE</p>
+          <p class="text-xs text-gray-400 mb-2">Paste this into any webpage, Webflow, Squarespace, etc.</p>
+          <div class="flex items-start gap-2">
+            <code id="embedCodeEl" class="text-xs text-gray-600 bg-white border border-gray-200 rounded p-2 flex-1 break-all font-mono"></code>
+            <button onclick="copyEmbed()" class="text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50 whitespace-nowrap mt-0.5">Copy</button>
+          </div>
+        </div>
         <p class="text-xs text-gray-400 text-center">The dashboard link is private — don't share it publicly.</p>
       </div>
     </div>
   </div>
 
-  <!-- Price edit popover -->
-  <div id="pricePopover" class="hidden fixed z-50 bg-white border border-gray-200 rounded-xl shadow-xl p-4" style="width:200px">
-    <label class="block text-xs font-medium text-gray-600 mb-2">Price (USD)</label>
-    <input id="priceInput" type="number" step="0.01" min="0" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-    <button onclick="confirmPrice()" class="cta-btn w-full text-white py-2 rounded-lg text-sm font-semibold mt-3 hover:opacity-90">Done</button>
-  </div>
 
   <script>
+    function markDirty() {
+      const btn = document.getElementById('getLinkBtn');
+      btn.disabled = false;
+      btn.classList.remove('opacity-40', 'cursor-not-allowed');
+      btn.classList.add('hover:opacity-90');
+    }
+
     const state = {
       productName: 'My Product',
       tagline: '',
       paymentType: 'one-time',
       price: 29,
+      currency: '$',
+      shippingCost: 0,
       ctaText: 'Pay Now',
       primaryColor: '#4f46e5',
       logoUrl: '',
@@ -333,15 +371,21 @@
     // Sync contenteditable fields to state
     document.querySelectorAll('[contenteditable][data-field]').forEach(el => {
       el.addEventListener('input', () => {
+        markDirty();
         state[el.dataset.field] = el.textContent.trim();
         if (el.dataset.field === 'productName') {
           document.getElementById('summaryProductName').textContent = el.textContent || 'Product';
+        }
+        if (el.dataset.field === 'currency') {
+          document.getElementById('shippingCurrencyEl').textContent = el.textContent || '$';
+          updateTotal();
         }
       });
     });
 
     // Type buttons
     function setType(type) {
+      if (state.paymentType !== type) markDirty();
       state.paymentType = type;
       document.querySelectorAll('.type-btn').forEach(b => {
         const isActive = b.dataset.type === type;
@@ -354,29 +398,56 @@
       });
 
       const cardFields = document.getElementById('cardFields');
+      const passwordFields = document.getElementById('passwordFields');
+      const shippingFields = document.getElementById('shippingFields');
+      const shippingRow = document.getElementById('shippingRow');
       const billingRow = document.getElementById('billingRow');
       const qtyRow = document.getElementById('qtyRow');
       const formHeaderText = document.getElementById('formHeaderText');
+      const cardLogos = document.getElementById('cardLogos');
+      const orderSummary = document.getElementById('orderSummary');
       const ctaEl = document.getElementById('ctaTextEl');
+
+      const isAccount = type === 'account';
+      passwordFields.classList.toggle('hidden', !isAccount);
+      orderSummary.classList.toggle('hidden', isAccount);
 
       if (type === 'one-time') {
         cardFields.classList.remove('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
         billingRow.classList.add('hidden');
         qtyRow.classList.remove('hidden');
         formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
         if (!state._ctaEdited) { ctaEl.textContent = 'Pay Now'; state.ctaText = 'Pay Now'; }
       } else if (type === 'subscription') {
         cardFields.classList.remove('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
         billingRow.classList.remove('hidden');
         qtyRow.classList.add('hidden');
         formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
         if (!state._ctaEdited) { ctaEl.textContent = 'Subscribe'; state.ctaText = 'Subscribe'; }
-      } else if (type === 'service') {
-        cardFields.classList.add('hidden');
+      } else if (type === 'physical') {
+        cardFields.classList.remove('hidden');
+        shippingFields.classList.remove('hidden');
+        shippingRow.classList.remove('hidden');
         billingRow.classList.add('hidden');
         qtyRow.classList.remove('hidden');
-        formHeaderText.textContent = 'Contact details';
-        if (!state._ctaEdited) { ctaEl.textContent = 'Request service'; state.ctaText = 'Request service'; }
+        formHeaderText.textContent = 'Payment details';
+        cardLogos.classList.remove('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Place order'; state.ctaText = 'Place order'; }
+      } else if (isAccount) {
+        cardFields.classList.add('hidden');
+        shippingFields.classList.add('hidden');
+        shippingRow.classList.add('hidden');
+        billingRow.classList.add('hidden');
+        qtyRow.classList.add('hidden');
+        formHeaderText.textContent = 'Create your account';
+        cardLogos.classList.add('hidden');
+        if (!state._ctaEdited) { ctaEl.textContent = 'Create account'; state.ctaText = 'Create account'; }
       }
       updateTotal();
     }
@@ -386,6 +457,7 @@
 
     // Color picker
     function setColor(color) {
+      markDirty();
       state.primaryColor = color;
       document.documentElement.style.setProperty('--primary', color);
       document.getElementById('colorSwatch').style.background = color;
@@ -395,41 +467,42 @@
       document.getElementById('colorPicker').click();
     });
 
-    // Price editing
-    function editPrice() {
-      const el = document.getElementById('priceEl');
-      const pop = document.getElementById('pricePopover');
-      const input = document.getElementById('priceInput');
-      const rect = el.getBoundingClientRect();
-      pop.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-      pop.style.left = Math.max(8, rect.left + window.scrollX - 60) + 'px';
-      input.value = state.price;
-      pop.classList.remove('hidden');
-      input.focus();
-      input.select();
-    }
-    function confirmPrice() {
-      const val = parseFloat(document.getElementById('priceInput').value) || 0;
+    // Price editing — inline like other text fields
+    document.getElementById('priceEl').addEventListener('input', () => {
+      markDirty();
+      const val = parseFloat(document.getElementById('priceEl').textContent) || 0;
       state.price = val;
-      document.getElementById('priceEl').textContent = val % 1 === 0 ? val : val.toFixed(2);
       updateTotal();
-      document.getElementById('pricePopover').classList.add('hidden');
-    }
-    document.getElementById('priceInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') confirmPrice();
-      if (e.key === 'Escape') document.getElementById('pricePopover').classList.add('hidden');
     });
-    document.addEventListener('click', e => {
-      const pop = document.getElementById('pricePopover');
-      if (!pop.classList.contains('hidden') && !pop.contains(e.target) && e.target.id !== 'priceEl') {
-        pop.classList.add('hidden');
+
+    document.getElementById('shippingCostEl').addEventListener('input', () => {
+      markDirty();
+      state.shippingCost = parseFloat(document.getElementById('shippingCostEl').textContent) || 0;
+      updateTotal();
+    });
+    document.getElementById('shippingCostEl').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('shippingCostEl').blur(); }
+      if (!/[\d.]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) e.preventDefault();
+    });
+    document.getElementById('priceEl').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('priceEl').blur(); }
+      // only allow digits and a single decimal point
+      if (!/[\d.]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+        e.preventDefault();
       }
     });
 
     function updateTotal() {
-      const qty = state.paymentType === 'subscription' ? 1 : 1;
-      const total = state.price * qty;
-      document.getElementById('totalEl').textContent = '$' + total.toFixed(2);
+      const total = state.price + (state.paymentType === 'physical' ? state.shippingCost : 0);
+      document.getElementById('totalEl').textContent = (state.currency || '$') + total.toFixed(2);
+    }
+
+    function toggleShipping() {
+      const body = document.getElementById('shippingBody');
+      const chevron = document.getElementById('shippingChevron');
+      const open = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', open);
+      chevron.style.transform = open ? '' : 'rotate(180deg)';
     }
 
     // Image uploads
@@ -437,6 +510,7 @@
       document.getElementById(field === 'logo' ? 'logoUpload' : 'productUpload').click();
     }
     async function handleUpload(field, input) {
+      markDirty();
       const file = input.files[0];
       if (!file) return;
       if (file.size > 700 * 1024) { alert('Image must be under 700KB'); return; }
@@ -512,6 +586,10 @@
         document.getElementById('dashLinkEl').textContent = dashUrl;
         document.getElementById('dashLinkEl').href = dashUrl;
 
+        const embedCode = `<iframe src="${simUrl}" style="width:100%;max-width:900px;height:600px;border:none;border-radius:16px" loading="lazy"></iframe>`;
+        document.getElementById('embedCodeEl').textContent = embedCode;
+        window._embedCode = embedCode;
+
         document.getElementById('linkResult').classList.remove('hidden');
         btn.classList.add('hidden');
         document.querySelector('#linkModal button[onclick="closeModal()"]').textContent = 'Done';
@@ -525,6 +603,14 @@
     function copyLink(elId) {
       const url = document.getElementById(elId).textContent;
       navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    }
+
+    function copyEmbed() {
+      navigator.clipboard.writeText(window._embedCode).then(() => {
         const btn = event.target;
         btn.textContent = 'Copied!';
         setTimeout(() => btn.textContent = 'Copy', 1500);
