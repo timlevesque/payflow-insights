@@ -185,7 +185,7 @@
     </div>
 
     <!-- Checkout card -->
-    <div class="flex flex-col lg:flex-row gap-4 bg-white rounded-xl shadow-sm p-6 lg:p-8">
+    <div id="checkoutCard" class="flex flex-col lg:flex-row gap-4 bg-white rounded-xl shadow-sm p-6 lg:p-8">
 
       <!-- Left: form fields -->
       <div id="formCol" class="lg:w-3/5 lg:pr-8 lg:border-r border-gray-100">
@@ -416,6 +416,11 @@
       formCol.classList.toggle('lg:pr-8', !isAccount);
       formCol.classList.toggle('lg:border-r', !isAccount);
       formCol.classList.toggle('lg:w-full', isAccount);
+      formCol.classList.toggle('max-w-md', isAccount);
+      formCol.classList.toggle('mx-auto', isAccount);
+      const card = document.getElementById('checkoutCard');
+      card.classList.toggle('max-w-lg', isAccount);
+      card.classList.toggle('mx-auto', isAccount);
 
       if (type === 'one-time') {
         cardFields.classList.remove('hidden');
