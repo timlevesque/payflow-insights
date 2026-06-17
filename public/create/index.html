@@ -155,7 +155,7 @@
   </div>
 
   <!-- EDITOR CANVAS -->
-  <div class="max-w-5xl mx-auto p-4 pt-8">
+  <div class="max-w-5xl mx-auto p-4 pt-4 sm:pt-8">
 
     <p class="edit-hint mb-6">Click anything to edit it</p>
 
@@ -173,7 +173,7 @@
         data-placeholder="Your Product Name"
         data-field="productName"
         class="text-xl font-bold text-gray-800 mb-1"
-      >My Product</h1>
+      >My Product or Business</h1>
 
       <p
         id="taglineEl"
@@ -268,7 +268,7 @@
 
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
-            <span class="text-gray-600" id="summaryProductName">My Product</span>
+            <span class="text-gray-600" id="summaryProductName">My Product or Business</span>
             <span class="font-medium text-gray-800 inline-flex items-center"><span id="currencyEl" contenteditable="true" data-field="currency" data-placeholder="$" style="min-width:1ch;padding:0;margin:0;">$</span><span id="priceEl" contenteditable="true" data-placeholder="0" inputmode="decimal" style="min-width:1ch;padding:0;margin:0;">29</span></span>
           </div>
           <div id="qtyRow" class="flex justify-between text-gray-400">
@@ -357,7 +357,7 @@
     }
 
     const state = {
-      productName: 'My Product',
+      productName: 'My Product or Business',
       tagline: '',
       paymentType: 'one-time',
       price: 29,
