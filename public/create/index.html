@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture identify".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);posthog.init('phc_E48xUHSTILpfeEgh4aS6h0BfamBd8Q8TqLNZWPM12Ox',{api_host:'https://us.i.posthog.com',defaults:'2025-05-24',person_profiles:'identified_only'})</script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@800&display=swap');
     * { font-family: 'Inter', sans-serif; }
 
     :root { --primary: #4f46e5; }
@@ -120,42 +120,30 @@
 
   <!-- TOOLBAR -->
   <div class="toolbar shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto whitespace-nowrap">
-      <a href="/" class="font-bold text-gray-800 text-sm whitespace-nowrap">
-        <span class="text-indigo-600">Pay</span>Flow
-      </a>
-
-      <div class="h-4 w-px bg-gray-200"></div>
-
-      <!-- Template / Payment type -->
-      <div class="flex gap-1.5" id="typeButtons">
-        <button data-type="one-time" onclick="setType('one-time')" class="type-btn active px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">One-time</button>
-        <button data-type="subscription" onclick="setType('subscription')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Subscription</button>
-        <button data-type="physical" onclick="setType('physical')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Physical</button>
-        <button data-type="account" onclick="setType('account')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Account</button>
-      </div>
-
-      <div class="h-4 w-px bg-gray-200"></div>
-
-      <!-- Color picker -->
-      <label class="flex items-center gap-2 cursor-pointer" title="Brand color">
-        <div id="colorSwatch" class="w-5 h-5 rounded-full border border-gray-300" style="background:var(--primary)"></div>
-        <span class="text-xs text-gray-500">Color</span>
-        <input type="color" id="colorPicker" value="#4f46e5" class="sr-only" oninput="setColor(this.value)">
-      </label>
-
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center">
+      <a href="/" class="text-xl flex-shrink-0" style="font-family:'Nunito',sans-serif;font-weight:800;"><span style="color:#4f46e5;">Pay</span><span style="color:#1f2937;">Flow</span></a>
       <div class="flex-1"></div>
-
-      <div class="sim-badge hidden sm:flex items-center gap-1">SIMULATION PREVIEW</div>
-
-      <button id="getLinkBtn" onclick="openGetLink()" disabled class="cta-btn text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-opacity whitespace-nowrap opacity-40 cursor-not-allowed">
-        Get My Link →
+      <div class="sim-badge hidden sm:flex items-center gap-1 mr-3">SIMULATION PREVIEW</div>
+      <button id="getLinkBtn" onclick="openGetLink()" disabled class="cta-btn text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-opacity whitespace-nowrap flex-shrink-0 opacity-40 cursor-not-allowed">
+        Generate My Link →
       </button>
     </div>
   </div>
 
   <!-- EDITOR CANVAS -->
-  <div class="max-w-5xl mx-auto p-4 pt-4 sm:pt-8">
+  <div class="max-w-5xl mx-auto p-4 pt-4">
+
+    <!-- Type tabs + color picker: all screen sizes -->
+    <div class="flex justify-center items-center gap-1.5 flex-wrap mb-4">
+      <button data-type="one-time" onclick="setType('one-time')" class="type-btn active px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">One-time</button>
+      <button data-type="subscription" onclick="setType('subscription')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Subscription</button>
+      <button data-type="physical" onclick="setType('physical')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Physical</button>
+      <button data-type="account" onclick="setType('account')" class="type-btn px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors">Account</button>
+      <label class="flex items-center gap-1.5 cursor-pointer ml-1" title="Brand color">
+        <div class="w-5 h-5 rounded-full border border-gray-300" style="background:var(--primary)" id="colorSwatchMobile"></div>
+        <input type="color" value="#4f46e5" class="sr-only" oninput="setColor(this.value)">
+      </label>
+    </div>
 
     <p class="edit-hint mb-6">Click anything to edit it</p>
 
@@ -228,7 +216,7 @@
         </div>
 
         <!-- Shipping section (physical only) -->
-        <div id="shippingFields" class="hidden mt-6">
+        <div id="shippingFields" class="hidden mt-6 mb-4">
           <button type="button" onclick="toggleShipping()" class="w-full flex items-center justify-between mb-2">
             <h2 class="text-base font-semibold text-gray-700">Shipping details</h2>
             <svg id="shippingChevron" class="w-4 h-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -244,7 +232,7 @@
           </div>
         </div>
 
-        <div class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm text-center cursor-text">
+        <div class="cta-btn w-full text-white py-3 px-4 rounded-lg font-semibold text-sm text-center cursor-text opacity-50">
           <span
             id="ctaTextEl"
             contenteditable="true"
@@ -470,12 +458,8 @@
       markDirty();
       state.primaryColor = color;
       document.documentElement.style.setProperty('--primary', color);
-      document.getElementById('colorSwatch').style.background = color;
+      document.getElementById('colorSwatchMobile').style.background = color;
     }
-    document.getElementById('colorPicker').addEventListener('click', e => e.stopPropagation());
-    document.getElementById('colorSwatch').parentElement.addEventListener('click', () => {
-      document.getElementById('colorPicker').click();
-    });
 
     // Price editing — inline like other text fields
     document.getElementById('priceEl').addEventListener('input', () => {
