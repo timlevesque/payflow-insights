@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /s/
+Disallow: /d/
+Disallow: /api/
+
+Sitemap: https://payflowinsights.com/sitemap.xml
