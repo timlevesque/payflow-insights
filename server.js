@@ -11,7 +11,7 @@ import fetch from 'node-fetch';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 
-dotenv.config();
+dotenv.config({ path: path.join(path.dirname(fileURLToPath(import.meta.url)), '.env') });
 
 const mailer = nodemailer.createTransport({
     service: 'gmail',
@@ -397,6 +397,7 @@ app.post('/api/simulation', cors(corsOptions), async (req, res) => {
             logoUrl: req.body.logoUrl || '',
             productImageUrl: req.body.productImageUrl || '',
             revealMessage: req.body.revealMessage || 'Thanks for your interest! This was a purchase simulation — no payment was taken.',
+            returnUrl: req.body.returnUrl || '',
             createdAt: new Date(),
             visits: 0,
         };

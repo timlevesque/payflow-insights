@@ -369,6 +369,13 @@
       }
 
       document.getElementById('disclosureModal').classList.add('hidden');
+
+      if (simData.returnUrl) {
+        const url = /^https?:\/\//i.test(simData.returnUrl) ? simData.returnUrl : 'https://' + simData.returnUrl;
+        window.location.href = url;
+        return;
+      }
+
       document.getElementById('pageContent').innerHTML = `
         <div class="max-w-md mx-auto text-center py-20">
           <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">

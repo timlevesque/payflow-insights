@@ -300,7 +300,10 @@
       <p class="text-xs text-amber-600 mb-4">📬 Check your spam folder — our email sometimes lands there.</p>
 
       <label class="block text-xs font-medium text-gray-700 mb-1">Reveal message <span class="text-gray-400">(shown to buyers after they "pay")</span></label>
-      <textarea id="revealMsgEl" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6 resize-none">Thanks for your interest! This was a purchase simulation — no payment was taken. We'll be in touch soon.</textarea>
+      <textarea id="revealMsgEl" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4 resize-none">Thanks for your interest! This was a purchase simulation — no payment was taken. We'll be in touch soon.</textarea>
+
+      <label class="block text-xs font-medium text-gray-700 mb-1">Return URL <span class="text-gray-400">(optional — redirect buyers after they continue)</span></label>
+      <input id="returnUrlEl" type="url" placeholder="https://yoursite.com/thank-you" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6">
 
       <button onclick="submitSimulation()" id="submitBtn" class="cta-btn w-full text-white py-3 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
         Generate links
@@ -563,6 +566,7 @@
         ctaText: document.getElementById('ctaTextEl').textContent.trim() || 'Pay Now',
         creatorEmail: email,
         revealMessage: revealMsg,
+        returnUrl: document.getElementById('returnUrlEl').value.trim() || '',
       };
 
       try {
